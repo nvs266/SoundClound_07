@@ -3,8 +3,8 @@ package com.framgia.mysoundcloud.screen.splash;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.framgia.mysoundcloud.MainActivity;
 import com.framgia.mysoundcloud.utils.Navigator;
+import com.framgia.mysoundcloud.screen.main.MainActivity;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
 
