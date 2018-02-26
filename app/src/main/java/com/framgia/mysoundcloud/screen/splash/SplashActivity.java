@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.framgia.mysoundcloud.MainActivity;
 import com.framgia.mysoundcloud.utils.Navigator;
 
-public class SplashActivity extends AppCompatActivity implements SplashContract.View{
+public class SplashActivity extends AppCompatActivity implements SplashContract.View {
 
     private final int SPLASH_DISPLAY_LENGTH = 700;
     private SplashContract.Presenter mPresenter;
