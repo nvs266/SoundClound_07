@@ -14,41 +14,43 @@ import com.framgia.mysoundcloud.R;
  * Created by sonng266 on 25/02/2018.
  */
 
-public class Nevigator {
+public class Navigator {
 
     private Activity mActivity;
     private Fragment mFragment;
 
-    public Nevigator(Activity activity) {
+    public Navigator(Activity activity) {
         this.mActivity = activity;
     }
 
-    public Nevigator(Fragment fragment) {
+    public Navigator(Fragment fragment) {
         this.mFragment = fragment;
         if (mFragment != null) {
             mActivity = mFragment.getActivity();
         }
     }
 
-    private void startActivity(Intent intent) {
+    private void startActivity(Intent intent, boolean isAnimate) {
         if (intent != null && mActivity != null) {
             mActivity.startActivity(intent);
-            setActivityTransactionAnimation(ActivityTransition.START);
+            if (isAnimate) {
+                setActivityTransactionAnimation(ActivityTransition.START);
+            }
         }
     }
 
-    public void startActivity(Class<? extends Activity> classz) {
+    public void startActivity(Class<? extends Activity> classz, boolean isAnimate) {
         if (mActivity != null) {
             Intent intent = new Intent(mActivity, classz);
-            startActivity(intent);
+            startActivity(intent, isAnimate);
         }
     }
 
-    public void startActivity(Class<? extends Activity> classz, Bundle args) {
+    public void startActivity(Class<? extends Activity> classz, Bundle args, boolean isAnimate) {
         if (mActivity != null) {
             Intent intent = new Intent(mActivity, classz);
             intent.putExtras(args);
-            startActivity(intent);
+            startActivity(intent, isAnimate);
         }
     }
 
