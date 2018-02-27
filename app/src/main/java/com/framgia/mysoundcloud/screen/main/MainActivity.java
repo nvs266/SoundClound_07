@@ -3,6 +3,7 @@ package com.framgia.mysoundcloud.screen.main;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -12,23 +13,32 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.framgia.mysoundcloud.R;
+import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresPagerAdapter;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 public class MainActivity extends AppCompatActivity implements MainViewConstract.View, SearchView.OnQueryTextListener, TabLayout.OnTabSelectedListener {
 
     private MainViewConstract.Presenter mPresenter;
     private TabLayout mTabLayout;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeToolbar();
+        initializeUI();
+    }
 
+    private void initializeUI() {
         mPresenter = new MainViewPresenter();
         mPresenter.setView(this);
 
         mTabLayout = findViewById(R.id.tab_layout);
+        mViewPager = findViewById(R.id.viewpager);
+
+        mViewPager.setAdapter(new MusicGenresPagerAdapter(getSupportFragmentManager()));
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.addOnTabSelectedListener(this);
     }
 
@@ -132,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         if (tab.getPosition() == 0) {
             updateTitle(getString(R.string.music_genres));
         } else updateTitle(getString(R.string.action_download));
+
+        mViewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
