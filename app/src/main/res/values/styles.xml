@@ -15,7 +15,13 @@
     </style>
 
     <style name="MyButtonStyle" parent="android:Widget.Holo.Button">
-        <item name="android:fontFamily">@font/lato_regula: , </item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Splash theme.-->
+    <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_splash_screen</item>
+        <item name="colorPrimaryDark">@color/deep_orange_500</item>
     </style>
 
 </resources>
