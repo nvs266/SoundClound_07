@@ -1,70 +1,119 @@
 package com.framgia.mysoundcloud.screen.musicgenres;
 
 
-import android.os.Bundle;
+import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
-import com.framgia.mysoundcloud.data.repository.TrackRepository;
-import com.framgia.mysoundcloud.data.source.TrackDataSource;
+import com.framgia.mysoundcloud.screen.BaseFragment;
 import com.framgia.mysoundcloud.utils.Constant;
+import com.framgia.mysoundcloud.widget.DialogManager;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicGenresFragment extends Fragment implements MusicGenresContract.View,
-        TrackDataSource.OnFetchDataListener<Track> {
 
-    private MusicGenresContract.Presenter mPresenter;
+public class MusicGenresFragment extends BaseFragment implements
+        MusicGenresContract.View, AdapterView.OnItemSelectedListener,
+        MusicGenresAdapter.ItemClickListener {
+
+    private MusicGenresPresenter mPresenter;
+    private MusicGenresAdapter mMusicGenresAdapter;
+    private DialogManager mDialogManager;
+    private ProgressDialog mProgressDialog;
+    private Spinner mSpinnerGenres;
 
     public MusicGenresFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_music_genres, container, false);
-        initializeUI(view);
-        return view;
-    }
-
-    private void initializeUI(View view) {
-        ArrayAdapter<CharSequence> genresAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.music_genres, android.R.layout.simple_spinner_item);
-        genresAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        Spinner spinnerGenres = view.findViewById(R.id.spinner_genres);
-        spinnerGenres.setAdapter(genresAdapter);
-
-        ArrayAdapter<CharSequence> topTypeAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.top_types, android.R.layout.simple_spinner_item);
-        topTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinnerTops = view.findViewById(R.id.spinner_picker_top_songs);
-        spinnerTops.setAdapter(topTypeAdapter);
-
+    protected void initializeUI(View view) {
         mPresenter = new MusicGenresPresenter();
         mPresenter.setView(this);
 
-        TrackRepository trackRepository = TrackRepository.getInstance();
-        trackRepository.getTracksRemote(Constant.GENRE_DEFAULT,
-                Constant.LIMIT_DEFAULT, this);
+        ArrayAdapter<CharSequence> genresAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.music_genres, android.R.layout.simple_spinner_item);
+        genresAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerGenres = view.findViewById(R.id.spinner_genres);
+        mSpinnerGenres.setAdapter(genresAdapter);
+        mSpinnerGenres.setOnItemSelectedListener(this);
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        mMusicGenresAdapter = new MusicGenresAdapter(getContext(), this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.addItemDecoration(
+                new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(mMusicGenresAdapter);
+
+        mDialogManager = new DialogManager(getContext());
     }
 
     @Override
-    public void onFetchDataSuccess(List<Track> data) {
+    protected int getLayoutFragmentId() {
+        return R.layout.fragment_music_genres;
     }
 
     @Override
-    public void onFetchDataFailure(String message) {
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.spinner_genres:
+                mPresenter.loadTrack(Constant.MUSIC_GENRES[position],
+                        Constant.LIMIT_DEFAULT, Constant.OFFSET_DEFAULT);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    @Override
+    public void showTracks(ArrayList<Track> trackList) {
+        mMusicGenresAdapter.replaceData(trackList);
+    }
+
+    @Override
+    public void showNoTrack() {
+        mMusicGenresAdapter.replaceData(new ArrayList<Track>());
+
+        if (mDialogManager != null) {
+            mDialogManager.dialogMessage(getString(R.string.msg_no_internet_connection),
+                    getString(R.string.title_error));
+        }
+    }
+
+    @Override
+    public void showLoadingTracksError(String message) {
+    }
+
+    @Override
+    public void showLoadingIndicator() {
+        mProgressDialog = ProgressDialog.show(getContext(),
+                Constant.MUSIC_GENRES[mSpinnerGenres.getSelectedItemPosition()],
+                getString(R.string.msg_loading), true);
+    }
+
+    @Override
+    public void hideLoadingIndicator() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onItemClicked(Track track) {
     }
 }

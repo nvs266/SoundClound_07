@@ -11,6 +11,8 @@ public interface DialogManagerInterface {
     void dialogButton(String msg, String title,
                       String positiveButton, String negativeButton, DialogListener mListener);
 
+    void dismissDialog();
+
     interface DialogListener {
         void onDialogPositiveClick();
         void onDialogNegativeClick();

@@ -155,6 +155,5 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-
     }
 }
