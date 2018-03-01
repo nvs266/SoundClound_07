@@ -21,4 +21,12 @@
         <item>Classical</item>
         <item>Country</item>
     </string-array>
+
+    <string-array name="top_types">
+        <item>Top 10</item>
+        <item>Top 20</item>
+        <item>Top 30</item>
+        <item>Top 40</item>
+        <item>Top 50</item>
+    </string-array>
 </resources>

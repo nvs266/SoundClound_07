@@ -8,7 +8,8 @@ public interface DialogManagerInterface {
 
     void dialogMessage(String msg, String title);
 
-    void dialogButton(String msg, String title, String positiveButton, String negativeButton, DialogListener mListener);
+    void dialogButton(String msg, String title,
+                      String positiveButton, String negativeButton, DialogListener mListener);
 
     interface DialogListener {
         void onDialogPositiveClick();
