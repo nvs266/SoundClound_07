@@ -13,10 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.framgia.mysoundcloud.R;
-import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresPagerAdapter;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
-public class MainActivity extends AppCompatActivity implements MainViewConstract.View, SearchView.OnQueryTextListener, TabLayout.OnTabSelectedListener {
+public class MainActivity extends AppCompatActivity implements MainViewConstract.View,
+        SearchView.OnQueryTextListener, TabLayout.OnTabSelectedListener {
 
     private MainViewConstract.Presenter mPresenter;
     private TabLayout mTabLayout;
@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        new DialogManager(this).dialogMessage(getString(R.string.msg_feature_is_coming), getString(R.string.msg_opps));
+        new DialogManager(this).dialogMessage(getString(R.string.msg_feature_is_coming),
+                getString(R.string.msg_opps));
         return false;
     }
 

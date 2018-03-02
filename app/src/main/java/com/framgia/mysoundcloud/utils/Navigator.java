@@ -108,7 +108,8 @@ public class Navigator {
         return isShowPrevious;
     }
 
-    private void setFragmentTransactionAnimation(FragmentTransaction transaction, @NavigateAnim int animation) {
+    private void setFragmentTransactionAnimation(
+            FragmentTransaction transaction, @NavigateAnim int animation) {
         switch (animation) {
             case NavigateAnim.FADED:
                 transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,

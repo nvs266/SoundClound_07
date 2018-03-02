@@ -1,8 +1,10 @@
-package com.framgia.mysoundcloud.screen.musicgenres;
+package com.framgia.mysoundcloud.screen.main;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresFragment;
 
 /**
  * Created by sonng266 on 27/02/2018.

@@ -28,7 +28,9 @@ public class DialogManager implements DialogManagerInterface {
     }
 
     @Override
-    public void dialogButton(String msg, String title, String positiveButton, String negativeButton, final DialogListener mListener) {
+    public void dialogButton(
+            String msg, String title, String positiveButton,
+            String negativeButton, final DialogListener mListener) {
         if (mContext != null && mListener != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage(msg)
