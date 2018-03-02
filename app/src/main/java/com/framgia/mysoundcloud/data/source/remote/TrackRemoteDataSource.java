@@ -20,8 +20,10 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource{
     }
 
     @Override
-    public void getTracksRemote(String genre, int limit, OnFetchDataListener<Track> listener) {
-        new FetchTrackListFromUrl(listener).execute(StringUtil.convertUrlFetchMusicGenre(genre, limit));
+    public void getTracksRemote(
+            String genre, int limit, int offSet, OnFetchDataListener<Track> listener) {
+        new FetchTrackListFromUrl(listener)
+                .execute(StringUtil.convertUrlFetchMusicGenre(genre, limit, offSet));
     }
 
     @Override

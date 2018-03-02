@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_time"
+        android:id="@+id/text_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_4"
@@ -37,6 +37,7 @@
         android:layout_marginEnd="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_8"
+        android:maxLines="1"
         android:text="@string/msg_title"
         android:textColor="@color/colorPrimaryText"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,10 +52,11 @@
         android:layout_marginBottom="@dimen/dp_4"
         android:layout_marginEnd="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
+        android:maxLines="1"
         android:text="@string/msg_artist"
         android:textColor="@color/colorSecondaryText"
         app:layout_constraintBottom_toTopOf="@+id/text_title"
-        app:layout_constraintEnd_toStartOf="@+id/text_time"
+        app:layout_constraintEnd_toStartOf="@+id/text_duration"
         app:layout_constraintStart_toEndOf="@+id/image_song" />
 
     <ImageView
@@ -81,10 +83,10 @@
         android:id="@+id/image_ic_favorite"
         android:layout_width="@dimen/dp_20"
         android:layout_height="@dimen/dp_20"
-        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginStart="90dp"
         android:src="@drawable/ic_favorite_grey"
         app:layout_constraintBottom_toBottomOf="@id/image_ic_play"
-        app:layout_constraintStart_toEndOf="@+id/text_number_play"
+        app:layout_constraintStart_toEndOf="@+id/image_ic_play"
         app:layout_constraintTop_toTopOf="@id/image_ic_play" />
 
     <TextView
@@ -96,12 +98,5 @@
         app:layout_constraintBottom_toBottomOf="@id/image_ic_play"
         app:layout_constraintStart_toEndOf="@id/image_ic_favorite"
         app:layout_constraintTop_toTopOf="@id/image_ic_play" />
-
-    <android.support.v7.widget.MenuPopupWindow.MenuDropDownListView
-        android:id="@+id/popup_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/text_time"
-        app:layout_constraintTop_toBottomOf="@id/text_title" />
 </android.support.constraint.ConstraintLayout>
 

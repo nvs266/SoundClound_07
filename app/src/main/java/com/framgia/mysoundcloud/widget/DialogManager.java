@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 public class DialogManager implements DialogManagerInterface {
 
     private Context mContext;
+    private AlertDialog mAlertDialog;
 
     public DialogManager(Context mContext) {
         this.mContext = mContext;
@@ -19,11 +20,11 @@ public class DialogManager implements DialogManagerInterface {
     @Override
     public void dialogMessage(String msg, String title) {
         if (mContext != null) {
-            new AlertDialog.Builder(mContext)
+            mAlertDialog = new AlertDialog.Builder(mContext)
                     .setMessage(msg)
                     .setTitle(title)
-                    .create()
-                    .show();
+                    .create();
+            mAlertDialog.show();
         }
     }
 
@@ -46,6 +47,13 @@ public class DialogManager implements DialogManagerInterface {
                     })
                     .create()
                     .show();
+        }
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
         }
     }
 
