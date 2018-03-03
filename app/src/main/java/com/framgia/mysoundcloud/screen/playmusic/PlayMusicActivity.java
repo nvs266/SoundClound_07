@@ -1,33 +1,69 @@
 package com.framgia.mysoundcloud.screen.playmusic;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
+import android.os.Build;
+import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.utils.Constant;
+import com.framgia.mysoundcloud.utils.StringUtil;
+import com.framgia.mysoundcloud.service.MusicService;
+import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 public class PlayMusicActivity extends AppCompatActivity
         implements PlayMusicContract.View, View.OnClickListener {
 
-    private Track mTrack;
+    private DialogManager mDialogManager;
+    private Track mCurrentTrack;
     private PlayMusicContract.Presenter mPresenter;
+    private MusicService mMusicService;
+    private boolean mBound;
+    private SeekBar mSeekBar;
+    private boolean mUserIsSeeking;
+    private TextView mTextDuration;
+    private TextView mTextEndTime;
+    private ImageView mImagePlay;
+    private ImageView mImageBackground;
+    private ImageView mImageSong;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_music);
+        setupUI();
+    }
 
-        mPresenter = new PlayMusicPresenter();
-        mPresenter.setView(this);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
 
-        initializeUI();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mConnection);
+        mBound = false;
     }
 
     @Override
@@ -54,40 +90,189 @@ public class PlayMusicActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.image_button_action_description:
-                new DialogManager(this).dialogMessage(mTrack.getDescription(),
+                if (mCurrentTrack == null || mDialogManager == null) break;
+                mDialogManager.dialogMessage(mCurrentTrack.getDescription(),
                         getString(R.string.title_description));
                 break;
-            case R.id.image_button_action_download:
+            case R.id.image_button_download:
+                if (mPresenter == null) break;
+                mPresenter.downloadTrack(mCurrentTrack);
                 break;
-            case R.id.image_action_next_song:
+            case R.id.image_play_next:
+                if (mMusicService == null) break;
+                mMusicService.playNext();
                 break;
-            case R.id.image_action_previous_song:
+            case R.id.image_play_previous:
+                if (mMusicService == null) break;
+                mMusicService.playPrevious();
                 break;
-            case R.id.image_action_play_pause:
+            case R.id.image_play_pause:
+                if (mMusicService == null) break;
+                mMusicService.changeMediaState();
                 break;
-            case R.id.image_action_shuffle:
+            case R.id.image_shuffle:
                 break;
-            case R.id.image_action_loop_type:
+            case R.id.image_change_loop_type:
                 break;
             default:
                 break;
         }
     }
 
-    private void initializeUI() {
+    @Override
+    public void notifyCantDownload() {
+        Toast.makeText(this,
+                R.string.msg_cant_be_download, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupUI() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mPresenter = new PlayMusicPresenter();
+        mPresenter.setView(this);
+        mDialogManager = new DialogManager(this);
+        mProgressBar = findViewById(R.id.progress_bar);
+        mSeekBar = findViewById(R.id.seek_bar);
+        mTextDuration = findViewById(R.id.text_duration);
+        mTextEndTime = findViewById(R.id.text_end_time);
+        mImagePlay = findViewById(R.id.image_play_pause);
+        mImageBackground = findViewById(R.id.image_background);
+        mImageSong = findViewById(R.id.image_song);
+        mProgressBar.getIndeterminateDrawable()
+                .setColorFilter(ContextCompat.getColor(
+                        this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle == null) return;
+        setupSeekBar();
+    }
 
-        mTrack = bundle.getParcelable(Constant.BUNDLE_TRACK);
-        if (mTrack == null) return;
+    private void setupSeekBar() {
+        mSeekBar.setMax(Constant.MAX_SEEK_BAR);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-        getSupportActionBar().setTitle(mTrack.getTitle());
-        getSupportActionBar().setSubtitle(mTrack.getUserName());
-        ImageView imageBackground = findViewById(R.id.image_background);
-        ImageView imageSong = findViewById(R.id.image_song);
-        Glide.with(this).load(mTrack.getArtworkUrl()).into(imageBackground);
-        Glide.with(this).load(mTrack.getArtworkUrl()).into(imageSong);
+            /**
+             * Su dung userSelectedPosition thay cho seekBar.getProgress() de
+             * tranh truong hop khi nguoi dung bo tay ra, method getProgress chua duoc chay den
+             * ma seek bar da duoc update lai
+             */
+
+            int userSelectedPosition = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    userSelectedPosition = progress;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                mUserIsSeeking = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mUserIsSeeking = false;
+                if (mBound) {
+                    mMusicService.actionSeekTo(userSelectedPosition);
+                }
+            }
+        });
+    }
+
+
+    public void updateUIWithTrack() {
+        if (mCurrentTrack == null || mMusicService == null) return;
+        getSupportActionBar().setTitle(mCurrentTrack.getTitle());
+        getSupportActionBar().setSubtitle(mCurrentTrack.getUserName());
+        Glide.with(getApplicationContext())
+                .load(mCurrentTrack.getArtworkUrl()).into(mImageBackground);
+        Glide.with(getApplicationContext()).load(mCurrentTrack.getArtworkUrl()).into(mImageSong);
+        mTextEndTime.setText(StringUtil.parseMilliSecondsToTimer(mCurrentTrack.getDuration()));
+    }
+
+    public void showLoadingIndicator() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mImagePlay.setVisibility(View.INVISIBLE);
+    }
+
+    public void hideLoadingIndicator() {
+        mProgressBar.setVisibility(View.GONE);
+        mImagePlay.setVisibility(View.VISIBLE);
+    }
+
+    private void updateUIWithMediaState(@PlaybackInfoListener.State int state) {
+        switch (state) {
+            case PlaybackListener.State.PREPARE:
+                showLoadingIndicator();
+                break;
+            case PlaybackListener.State.PLAYING:
+                hideLoadingIndicator();
+                mImagePlay.setImageDrawable(getResources()
+                        .getDrawable(R.drawable.ic_pause_white_48dp));
+                break;
+            case PlaybackListener.State.PAUSE:
+                hideLoadingIndicator();
+                mImagePlay.setImageDrawable(getResources()
+                        .getDrawable(R.drawable.ic_play_arrow_white_48dp));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mBound = true;
+            mMusicService = ((MusicService.LocalBinder) service).getService();
+
+            mMusicService.setPlaybackListener(new PlaybackListener(true));
+            mCurrentTrack = mMusicService.getCurrentTrack();
+
+            updateUIWithTrack();
+            updateUIWithMediaState(mMusicService.getMediaState());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+            mMusicService.setPlaybackListener(null);
+        }
+    };
+
+    private class PlaybackListener extends PlaybackInfoListener {
+
+        PlaybackListener(boolean updatingProgressSeekBar) {
+            super(updatingProgressSeekBar);
+        }
+
+        @Override
+        public void onTrackChanged(Track track) {
+            mCurrentTrack = track;
+            updateUIWithTrack();
+        }
+
+        /**
+         * Stop updating seek bar when user touches it
+         *
+         * @param percent
+         */
+        @Override
+        public void onProgressUpdate(double percent) {
+            if (!mUserIsSeeking) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mSeekBar.setProgress((int) percent, true);
+                } else {
+                    mSeekBar.setProgress((int) percent);
+                }
+            }
+            mTextDuration.setText(StringUtil.parseMilliSecondsToTimer(
+                    (long) ((mCurrentTrack.getDuration() / Constant.MAX_SEEK_BAR) * percent)));
+        }
+
+        @Override
+        public void onStateChanged(int state) {
+            updateUIWithMediaState(state);
+        }
     }
 }

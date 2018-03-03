@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
 import com.framgia.mysoundcloud.utils.Constant;
+import com.framgia.mysoundcloud.utils.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,7 +112,7 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         track.setId(jsonTrack.getInt(Track.TrackEntity.ID));
         track.setPlaybackCount(jsonTrack.getInt(Track.TrackEntity.PLAYBACK_COUNT));
         track.setTitle(jsonTrack.getString(Track.TrackEntity.TITLE));
-        track.setUri(jsonTrack.getString(Track.TrackEntity.URI));
+        track.setUri(StringUtil.getUrlStreamTrack(jsonTrack.getString(Track.TrackEntity.URI)));
         track.setLikesCount(jsonTrack.getInt(Track.TrackEntity.LIKES_COUNT));
         track.setUserName(jsonUser.getString(Track.TrackEntity.USERNAME));
         return track;
