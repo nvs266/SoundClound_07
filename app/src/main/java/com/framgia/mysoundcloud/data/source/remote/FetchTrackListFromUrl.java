@@ -55,26 +55,9 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
 
         JSONArray jsonCollection = jsonObject.getJSONArray(Track.TrackEntity.COLLECTION);
         for (int i = 0; i < jsonCollection.length(); i++) {
-            // Parse track
             JSONObject jsonTrack = jsonCollection.getJSONObject(i)
                     .getJSONObject(Track.TrackEntity.TRACK);
-            Track track = new Track();
-            track.setArtworkUrl(jsonTrack.getString(Track.TrackEntity.ARTWORK_URL));
-            track.setDescription(jsonTrack.getString(Track.TrackEntity.DESCRIPTION));
-            track.setDownloadable(jsonTrack.getBoolean(Track.TrackEntity.DOWNLOADABLE));
-            track.setDownloadUrl(jsonTrack.getString(Track.TrackEntity.DOWNLOAD_URL));
-            track.setDuration(jsonTrack.getInt(Track.TrackEntity.DURATION));
-            track.setId(jsonTrack.getInt(Track.TrackEntity.ID));
-            track.setPlaybackCount(jsonTrack.getInt(Track.TrackEntity.PLAYBACK_COUNT));
-            track.setTitle(jsonTrack.getString(Track.TrackEntity.TITLE));
-            track.setUri(jsonTrack.getString(Track.TrackEntity.URI));
-            track.setLikesCount(jsonTrack.getInt(Track.TrackEntity.LIKES_COUNT));
-
-            // Parse user
-            JSONObject jsonUser = jsonTrack.getJSONObject(Track.TrackEntity.USER);
-            track.setUserName(jsonUser.getString(Track.TrackEntity.USERNAME));
-
-            trackList.add(track);
+            trackList.add(parseJsonObjectToTrackObject(jsonTrack));
         }
         return trackList;
     }
@@ -99,5 +82,38 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         br.close();
         httpURLConnection.disconnect();
         return sb.toString();
+    }
+
+    private String parseArtworkUrlToBetter(String artworkUrl) {
+        if (artworkUrl != null) {
+            return artworkUrl.replace(Track.TrackEntity.LARGE_IMAGE_SIZE,
+                    Track.TrackEntity.BETTER_IMAGE_SIZE);
+        }
+        return null;
+    }
+
+    private Track parseJsonObjectToTrackObject(JSONObject jsonTrack) throws JSONException {
+        Track track = new Track();
+        JSONObject jsonUser = jsonTrack.getJSONObject(Track.TrackEntity.USER);
+        String artworkUrl = jsonTrack.getString(Track.TrackEntity.ARTWORK_URL);
+
+        // Null artwork is replaced by user's avatar
+        if (artworkUrl.equals(Constant.NULL_RESULT)) {
+            artworkUrl = jsonTrack.getJSONObject(Track.TrackEntity.USER)
+                    .getString(Track.TrackEntity.AVATAR_URL);
+        }
+
+        track.setArtworkUrl(parseArtworkUrlToBetter(artworkUrl));
+        track.setDescription(jsonTrack.getString(Track.TrackEntity.DESCRIPTION));
+        track.setDownloadable(jsonTrack.getBoolean(Track.TrackEntity.DOWNLOADABLE));
+        track.setDownloadUrl(jsonTrack.getString(Track.TrackEntity.DOWNLOAD_URL));
+        track.setDuration(jsonTrack.getInt(Track.TrackEntity.DURATION));
+        track.setId(jsonTrack.getInt(Track.TrackEntity.ID));
+        track.setPlaybackCount(jsonTrack.getInt(Track.TrackEntity.PLAYBACK_COUNT));
+        track.setTitle(jsonTrack.getString(Track.TrackEntity.TITLE));
+        track.setUri(jsonTrack.getString(Track.TrackEntity.URI));
+        track.setLikesCount(jsonTrack.getInt(Track.TrackEntity.LIKES_COUNT));
+        track.setUserName(jsonUser.getString(Track.TrackEntity.USERNAME));
+        return track;
     }
 }

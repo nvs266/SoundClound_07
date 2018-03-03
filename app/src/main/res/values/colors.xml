@@ -19,5 +19,8 @@
     <!--Blue-->
     <color name="cloud_burst">#343F4B</color>
 
+    <!--Black-->
+    <color name="black_transparent">#e3181818</color>
+
 
 </resources>

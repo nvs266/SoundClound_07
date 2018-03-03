@@ -75,8 +75,9 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
         private TextView mTextPlaybackCount;
         private TextView mTextLikeCount;
         private TextView mTextDuration;
+        private Track mTrack;
 
-        public ItemViewHolder(View itemView, ItemClickListener itemClickListener) {
+        public ItemViewHolder(View itemView, final ItemClickListener itemClickListener) {
             super(itemView);
 
             mTextTitle = itemView.findViewById(R.id.text_title);
@@ -85,11 +86,19 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
             mTextLikeCount = itemView.findViewById(R.id.text_number_favorite);
             mTextPlaybackCount = itemView.findViewById(R.id.text_number_play);
             mImageArtWork = itemView.findViewById(R.id.image_song);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemClickListener.onItemClicked(mTrack);
+                }
+            });
         }
 
         public void setData(Track track) {
             if (track == null) return;
 
+            this.mTrack = track;
             mTextTitle.setText(track.getTitle());
             mTextPlaybackCount.setText(String.valueOf(track.getPlaybackCount()));
             mTextArtist.setText(track.getUserName());
