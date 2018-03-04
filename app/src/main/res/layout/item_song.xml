@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_100">
 
-
     <ImageView
         android:id="@+id/image_song"
         android:layout_width="@dimen/dp_70"
@@ -12,6 +11,8 @@
         android:layout_marginBottom="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/ic_splash"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -83,7 +84,7 @@
         android:id="@+id/image_ic_favorite"
         android:layout_width="@dimen/dp_20"
         android:layout_height="@dimen/dp_20"
-        android:layout_marginStart="90dp"
+        android:layout_marginStart="@dimen/dp_90"
         android:src="@drawable/ic_favorite_grey"
         app:layout_constraintBottom_toBottomOf="@id/image_ic_play"
         app:layout_constraintStart_toEndOf="@+id/image_ic_play"
