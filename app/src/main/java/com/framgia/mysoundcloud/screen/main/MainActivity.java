@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_menu, menu);
+        getMenuInflater().inflate(R.menu.options_menu_search, menu);
         initializeSearchView(menu);
         return super.onCreateOptionsMenu(menu);
     }

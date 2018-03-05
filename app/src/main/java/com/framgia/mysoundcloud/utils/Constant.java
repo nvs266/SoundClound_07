@@ -18,9 +18,12 @@ public final class Constant {
     public static final int CONNECT_TIME_OUT = 15000; /* milliseconds */
     public static final int OFFSET_DEFAULT = 0;
     public static final int LIMIT_DEFAULT = 10;
+    public static final String NULL_RESULT = "null";
     public static final String[] MUSIC_GENRES = {"all-music", "all-audio",
             "alternativerock", "ambient", "classical", "country"};
 
     public static final String BREAK_LINE = "\n";
     public static final String LIMIT = "limit";
+    public static final String BUNDLE_TRACK = "BUNDLE_TRACK";
+    public static final String BUNDLE_TRACK_LIST = "BUNDLE_TRACK_LIST";
 }

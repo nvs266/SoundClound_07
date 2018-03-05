@@ -16,6 +16,8 @@
     <string name="msg_loading">Loading...</string>
     <string name="title_error">Error</string>
     <string name="msg_no_internet_connection">No internet connection</string>
+    <string name="title_description">Description</string>
+    <string name="title_next_up">Next up</string>
     <string-array name="music_genres">
         <item>All music</item>
         <item>All audio</item>

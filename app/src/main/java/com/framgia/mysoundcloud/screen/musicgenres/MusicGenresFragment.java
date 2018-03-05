@@ -2,6 +2,7 @@ package com.framgia.mysoundcloud.screen.musicgenres;
 
 
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +15,9 @@ import android.widget.Spinner;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BaseFragment;
+import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
 import com.framgia.mysoundcloud.utils.Constant;
+import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.ArrayList;
@@ -115,5 +118,8 @@ public class MusicGenresFragment extends BaseFragment implements
 
     @Override
     public void onItemClicked(Track track) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constant.BUNDLE_TRACK, track);
+        new Navigator(getActivity()).startActivity(PlayMusicActivity.class, bundle, true);
     }
 }
