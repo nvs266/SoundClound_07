@@ -24,7 +24,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
 import com.framgia.mysoundcloud.service.MusicService;
+import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
@@ -80,27 +82,12 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     }
 
     @Override
-    public void showMiniControlMusic() {
-
-    }
-
-    @Override
-    public void hideMiniControlMusic() {
-
-    }
-
-    @Override
-    public void showSearchResults() {
-
-    }
-
-    @Override
-    public void showTablayout() {
+    public void showTabLayout() {
         mTabLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideTablayout() {
+    public void hideTabLayout() {
         mTabLayout.setVisibility(View.GONE);
     }
 
@@ -130,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
             case R.id.image_play_pause:
                 if (!mBound) break;
                 mMusicService.changeMediaState();
+                break;
+            case R.id.layout_mini_control:
+                new Navigator(this).startActivity(PlayMusicActivity.class, false);
                 break;
             default:
                 break;
@@ -183,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         mPresenter = new MainViewPresenter();
         mPresenter.setView(this);
 
+        mLayoutMiniControl.setOnClickListener(this);
+
         mViewPager.setAdapter(new MusicGenresPagerAdapter(getSupportFragmentManager()));
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.addOnTabSelectedListener(this);
@@ -207,14 +199,14 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 // do something
-                hideTablayout();
+                hideTabLayout();
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // do something
-                showTablayout();
+                showTabLayout();
                 return true;
             }
         });

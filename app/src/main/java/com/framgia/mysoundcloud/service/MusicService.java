@@ -1,11 +1,22 @@
 package com.framgia.mysoundcloud.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.screen.main.MainActivity;
 import com.framgia.mysoundcloud.utils.music.MusicPlayerController;
 import com.framgia.mysoundcloud.utils.music.MusicPlayerManager;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
@@ -19,17 +30,40 @@ public class MusicService extends Service {
     public static final String ACTION_PREVIOUS_TRACK = "ACTION_PREVIOUS_TRACK";
 
     // Notification
-    public static final int NOTIFY_ID = 1;
+    private static final int NOTIFY_ID = 1;
+    private static final int ORDER_ACTION_PREVIOUS = 0;
+    private static final int ORDER_ACTION_PLAY_PAUSE = 1;
+    private static final int ORDER_ACTION_NEXT = 2;
+    private static final String TITLE_ACTION_PREVIOUS = "Previous";
+    private static final String TITLE_ACTION_PLAY = "Play";
+    private static final String TITLE_ACTION_PAUSE = "Pause";
+    private static final String TITLE_ACTION_NEXT = "Next";
 
     private final IBinder mBinder = new LocalBinder();
 
     private MusicPlayerManager mMusicPlayerManager;
+    private NotificationCompat.Builder mBuilder;
+    private PendingIntent pendingIntentOpenApp;
+    private PendingIntent nextPendingIntent;
+    private PendingIntent prevPendingIntent;
+    private PendingIntent ptPlayPause;
+    private Bitmap mBitmap;
 
     @Override
     public void onCreate() {
         super.onCreate();
     }
 
+    /**
+     * return START_NOT_STICKY : khi system bi kill neu service o trang thai started
+     * service cung se bi kill va
+     * se khong duoc goi de khoi chay lai
+     *
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         handleIntent(intent);
@@ -42,14 +76,21 @@ public class MusicService extends Service {
         return mBinder;
     }
 
-
+    /**
+     * Nhan intent tu notification de control nhac
+     * Khi dang o trang thai PREPARE nhac se khong the PLAY - PAUSE
+     * vi no chua load duoc ve buffer
+     *
+     * @param intent
+     */
     public void handleIntent(Intent intent) {
         String action = intent != null ? intent.getAction() : null;
         if (action == null) return;
-
         switch (action) {
             case ACTION_CHANGE_MEDIA_STATE:
-                changeMediaState();
+                if (getMediaState() != PlaybackInfoListener.State.PREPARE) {
+                    changeMediaState();
+                }
                 break;
             case ACTION_PREVIOUS_TRACK:
                 playPrevious();
@@ -62,11 +103,16 @@ public class MusicService extends Service {
         }
     }
 
+    /**
+     * Goi den cac phuong thuc cho {@link MusicPlayerManager} xu ly
+     *
+     * @param tracks
+     */
+
     public void playTracks(Track... tracks) {
         if (mMusicPlayerManager == null) {
-            mMusicPlayerManager = new MusicPlayerController();
+            mMusicPlayerManager = new MusicPlayerController(this);
         }
-
         mMusicPlayerManager.playTracks(tracks);
     }
 
@@ -79,9 +125,6 @@ public class MusicService extends Service {
         return mMusicPlayerManager != null ? mMusicPlayerManager.getCurrentTrack() : null;
     }
 
-    public boolean isPlaying() {
-        return mMusicPlayerManager != null && mMusicPlayerManager.isPlaying();
-    }
 
     public void actionSeekTo(int userSelectedPosition) {
         if (mMusicPlayerManager == null) return;
@@ -106,6 +149,99 @@ public class MusicService extends Service {
     public int getMediaState() {
         if (mMusicPlayerManager == null) return PlaybackInfoListener.State.INVALID;
         return mMusicPlayerManager.getCurrentState();
+    }
+
+    /**
+     * Viec su dung foreground service giup ung dung bi kill nhac van chay
+     * Khi nhac dung se stop foreground, thuoc tinh false de khi dung nhac, notification khong bi mat
+     * Voi cung NOTIFY_ID notification se duoc update
+     */
+
+    public void initializeNotification(@PlaybackInfoListener.State int state) {
+        if (getCurrentTrack() == null) return;
+        initializeBaseNotification();
+        if (state == PlaybackInfoListener.State.PAUSE) {
+            mBuilder.addAction(R.drawable.ic_skip_previous_black_24dp, TITLE_ACTION_PREVIOUS, prevPendingIntent)   // #0
+                    .addAction(R.drawable.ic_play_arrow_black_36dp, TITLE_ACTION_PLAY, ptPlayPause)    // #1
+                    .addAction(R.drawable.ic_skip_next_black_24dp, TITLE_ACTION_NEXT, nextPendingIntent)  // #2
+                    .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                            .setShowActionsInCompactView(ORDER_ACTION_PREVIOUS, ORDER_ACTION_PLAY_PAUSE, ORDER_ACTION_NEXT));
+
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(NOTIFY_ID, mBuilder.build());
+        } else {
+            mBuilder.addAction(R.drawable.ic_skip_previous_black_24dp, TITLE_ACTION_PREVIOUS, prevPendingIntent)   // #0
+                    .addAction(R.drawable.ic_pause_black_36dp, TITLE_ACTION_PAUSE, ptPlayPause)    // #2
+                    .addAction(R.drawable.ic_skip_next_black_24dp, TITLE_ACTION_NEXT, nextPendingIntent)  // #1
+                    .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                            .setShowActionsInCompactView(ORDER_ACTION_PREVIOUS, ORDER_ACTION_PLAY_PAUSE, ORDER_ACTION_NEXT));
+
+            startForeground(NOTIFY_ID, mBuilder.build());   // startForeground need a notification
+        }
+    }
+
+    /**
+     * Load image se bi delay do do tao notification truoc
+     * neu image load xong thi update lai
+     */
+    public void loadImage() {
+        if (getCurrentTrack() == null) return;
+        Glide.with(this)
+                .load(getCurrentTrack().getArtworkUrl())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        mBitmap = resource;
+
+                        mBuilder.setLargeIcon(mBitmap);
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.notify(NOTIFY_ID, mBuilder.build());
+                    }
+                });
+    }
+
+    private void initializeBaseNotification() {
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        pendingIntentOpenApp = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+
+        Intent actionNextIntent = new Intent(getApplicationContext(), MusicService.class);
+        actionNextIntent.setAction(ACTION_NEXT_TRACK);
+        nextPendingIntent = PendingIntent.getService(getApplicationContext(), 0, actionNextIntent, 0);
+
+        Intent actionPrevIntent = new Intent(getApplicationContext(), MusicService.class);
+        actionPrevIntent.setAction(ACTION_PREVIOUS_TRACK);
+        prevPendingIntent = PendingIntent.getService(getApplicationContext(), 0, actionPrevIntent, 0);
+
+        Intent actionPlayIntent = new Intent(getApplicationContext(), MusicService.class);
+        actionPlayIntent.setAction(ACTION_CHANGE_MEDIA_STATE);
+        ptPlayPause = PendingIntent.getService(getApplicationContext(), 0, actionPlayIntent, 0);
+
+        mBuilder = new NotificationCompat.Builder(getApplicationContext(), "")
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(getCurrentTrack().getTitle())
+                .setContentText(getCurrentTrack().getUserName())
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .setSmallIcon(R.drawable.ic_music_note_deep_orange_500_24dp)
+                .setContentIntent(pendingIntentOpenApp);
+
+        setLargeIconBuilder();
+    }
+
+    /**
+     * Su dung mBitmap de check neu 1 bai nhac dang choi, image da duoc load,
+     * thi khi update notification anh se khong can load lai
+     */
+    private void setLargeIconBuilder() {
+        if (mBuilder == null) return;
+        if (mBitmap == null) {
+            mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                    R.mipmap.ic_launcher_foreground));
+        } else {
+            mBuilder.setLargeIcon(mBitmap);
+        }
     }
 
     public class LocalBinder extends Binder {

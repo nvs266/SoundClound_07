@@ -1,7 +1,5 @@
 package com.framgia.mysoundcloud.utils.music;
 
-import android.app.Notification;
-
 import com.framgia.mysoundcloud.data.model.Track;
 
 /**
@@ -13,8 +11,6 @@ public interface MusicPlayerManager {
     void playTracks(Track... tracks);
 
     void release();
-
-    boolean isPlaying();
 
     void changeMediaState();
 
@@ -29,8 +25,6 @@ public interface MusicPlayerManager {
     void setPlaybackInfoListener(PlaybackInfoListener listener);
 
     void seekTo(int percent);
-
-    Notification getMusicNotification();
 
     Track getCurrentTrack();
 

@@ -13,21 +13,14 @@ interface MainViewConstract {
     interface View {
         void updateTitle(String title);
 
-        void showMiniControlMusic();
+        void showTabLayout();
 
-        void hideMiniControlMusic();
-
-        void showSearchResults();
-
-        void showTablayout();
-
-        void hideTablayout();
+        void hideTabLayout();
     }
 
     /**
      * Presenter.
      */
     interface Presenter extends BasePresenter<MainViewConstract.View> {
-        void handleClick();
     }
 }
