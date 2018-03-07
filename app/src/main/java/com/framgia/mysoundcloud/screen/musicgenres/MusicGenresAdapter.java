@@ -3,16 +3,21 @@ package com.framgia.mysoundcloud.screen.musicgenres;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.data.source.remote.DownloadTrackManager;
 import com.framgia.mysoundcloud.screen.BaseRecylerViewAdapter;
 import com.framgia.mysoundcloud.utils.StringUtil;
+import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +26,8 @@ import java.util.List;
  * Created by sonng266 on 02/03/2018.
  */
 
-public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapter.ItemViewHolder> {
+public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapter.ItemViewHolder>
+        implements DownloadTrackManager.DownloadListener {
 
     private List<Track> mTracks;
     private ItemClickListener mItemClickListener;
@@ -64,6 +70,17 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
         notifyDataSetChanged();
     }
 
+    @Override
+    public void onDownloadError(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDownloading() {
+        Toast.makeText(getContext(), getContext().getString(R.string.msg_downloading),
+                Toast.LENGTH_SHORT).show();
+    }
+
     /**
      * ItemViewHolder
      */
@@ -76,8 +93,9 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
         private TextView mTextLikeCount;
         private TextView mTextDuration;
         private Track mTrack;
+        private TextView mTextOptions;
 
-        public ItemViewHolder(View itemView, final ItemClickListener itemClickListener) {
+        ItemViewHolder(View itemView, final ItemClickListener itemClickListener) {
             super(itemView);
 
             mTextTitle = itemView.findViewById(R.id.text_title);
@@ -86,6 +104,8 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
             mTextLikeCount = itemView.findViewById(R.id.text_number_favorite);
             mTextPlaybackCount = itemView.findViewById(R.id.text_number_play);
             mImageArtWork = itemView.findViewById(R.id.image_song);
+
+            setupOptionsMenu(itemView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -105,6 +125,39 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
             mTextLikeCount.setText(String.valueOf(track.getLikesCount()));
             mTextDuration.setText(StringUtil.parseMilliSecondsToTimer(track.getDuration()));
             Glide.with(getContext()).load(track.getArtworkUrl()).into(mImageArtWork);
+        }
+
+        private void setupOptionsMenu(View itemView) {
+            mTextOptions = itemView.findViewById(R.id.text_options);
+            mTextOptions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getContext(), mTextOptions);
+                    popupMenu.inflate(R.menu.options_menu_item_track);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.action_add_to_next_up:
+                                    new DialogManager(getContext())
+                                            .dialogMessage(getContext()
+                                                            .getString(R.string.msg_feature_is_coming),
+                                                    getContext().getString(R.string.msg_opps));
+                                    break;
+                                case R.id.action_download:
+                                    new DownloadTrackManager(getContext(),
+                                            MusicGenresAdapter.this)
+                                            .downloadTrack(mTrack);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
+                }
+            });
         }
     }
 

@@ -1,12 +1,17 @@
 package com.framgia.mysoundcloud.screen.playmusic;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +27,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.data.source.remote.DownloadTrackManager;
 import com.framgia.mysoundcloud.utils.Constant;
 import com.framgia.mysoundcloud.utils.StringUtil;
 import com.framgia.mysoundcloud.service.MusicService;
@@ -29,8 +35,9 @@ import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 public class PlayMusicActivity extends AppCompatActivity
-        implements PlayMusicContract.View, View.OnClickListener {
+        implements PlayMusicContract.View, View.OnClickListener, NextUpDialogFragment.Listener, DownloadTrackManager.DownloadListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1;
     private DialogManager mDialogManager;
     private Track mCurrentTrack;
     private PlayMusicContract.Presenter mPresenter;
@@ -73,6 +80,10 @@ public class PlayMusicActivity extends AppCompatActivity
                 onBackPressed();
                 break;
             case R.id.action_show_next_up:
+                if (mBound) {
+                    BottomSheetDialogFragment bottomSheetDialogFragment = NextUpDialogFragment.newInstance(mMusicService.getListTrack());
+                    bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                }
                 break;
             default:
                 break;
@@ -95,8 +106,7 @@ public class PlayMusicActivity extends AppCompatActivity
                         getString(R.string.title_description));
                 break;
             case R.id.image_button_download:
-                if (mPresenter == null) break;
-                mPresenter.downloadTrack(mCurrentTrack);
+                initializePermissionDownload();
                 break;
             case R.id.image_play_next:
                 if (mMusicService == null) break;
@@ -120,9 +130,47 @@ public class PlayMusicActivity extends AppCompatActivity
     }
 
     @Override
-    public void notifyCantDownload() {
-        Toast.makeText(this,
-                R.string.msg_cant_be_download, Toast.LENGTH_SHORT).show();
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    new DownloadTrackManager(this, this).downloadTrack(mCurrentTrack);
+                } else {
+                    Toast.makeText(mMusicService, R.string.msg_permission_denied, Toast.LENGTH_SHORT).show();
+                }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNextUpItemClicked(int position) {
+        if (mBound) {
+            mMusicService.playTrackAtPosition(position);
+        }
+    }
+
+    @Override
+    public void onDownloadError(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDownloading() {
+        Toast.makeText(this, getString(R.string.msg_downloading), Toast.LENGTH_SHORT).show();
+    }
+
+    private void initializePermissionDownload() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    Constant.PERMISSONS, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+        } else {
+            new DownloadTrackManager(this, this).downloadTrack(mCurrentTrack);
+        }
     }
 
     private void setupUI() {
@@ -177,7 +225,6 @@ public class PlayMusicActivity extends AppCompatActivity
             }
         });
     }
-
 
     public void updateUIWithTrack() {
         if (mCurrentTrack == null || mMusicService == null) return;

@@ -19,6 +19,10 @@ public class StringUtil {
                 Constant.CLIENT_ID, BuildConfig.API_KEY);
     }
 
+    public static String convertUrlDownloadTrack(String url) {
+        return String.format("%s?%s=%s", url, Constant.CLIENT_ID, BuildConfig.API_KEY);
+    }
+
     public static String parseMilliSecondsToTimer(long milliseconds) {
         String parseTimer = "";
         String secondsString = "";

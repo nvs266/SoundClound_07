@@ -161,7 +161,11 @@ public class MusicService extends Service {
         if (getCurrentTrack() == null) return;
         initializeBaseNotification();
         if (state == PlaybackInfoListener.State.PAUSE) {
-            mBuilder.addAction(R.drawable.ic_skip_previous_black_24dp, TITLE_ACTION_PREVIOUS, prevPendingIntent)   // #0
+
+            stopForeground(false);
+
+            mBuilder.setOngoing(false)
+                    .addAction(R.drawable.ic_skip_previous_black_24dp, TITLE_ACTION_PREVIOUS, prevPendingIntent)   // #0
                     .addAction(R.drawable.ic_play_arrow_black_36dp, TITLE_ACTION_PLAY, ptPlayPause)    // #1
                     .addAction(R.drawable.ic_skip_next_black_24dp, TITLE_ACTION_NEXT, nextPendingIntent)  // #2
                     .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()

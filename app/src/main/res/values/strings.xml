@@ -6,7 +6,6 @@
     <string name="msg_finding_tracks">Finding tracks...</string>
     <string name="msg_feature_is_coming">Feature is coming...</string>
     <string name="msg_opps">Opps!</string>
-    <string name="action_download">Download</string>
     <string name="msg_genres">Genres</string>
     <string name="msg_top_50">Top 50</string>
     <string name="msg_00_00">00:00</string>
@@ -19,6 +18,12 @@
     <string name="title_description">Description</string>
     <string name="title_next_up">Next up</string>
     <string name="msg_cant_be_download">Can\'t be downloaded due to copyright issue</string>
+    <string name="msg_permission_denied">Permission denied</string>
+    <string name="msg_downloading">Downloading...</string>
+    <string name="msg_download_failed">Download failed</string>
+    <string name="text_icon">⋮</string>
+    <string name="action_add_to_next_up">Add to Next up</string>
+    <string name="action_download">Download</string>
     <string-array name="music_genres">
         <item>All music</item>
         <item>All audio</item>
