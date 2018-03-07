@@ -21,9 +21,4 @@ public class MainViewPresenter implements MainViewConstract.Presenter {
     public void onStop() {
 
     }
-
-    @Override
-    public void handleClick() {
-
-    }
 }

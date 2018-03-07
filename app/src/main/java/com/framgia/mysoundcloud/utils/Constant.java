@@ -28,10 +28,6 @@ public final class Constant {
     // String
     public static final String BREAK_LINE = "\n";
 
-    // Bundle
-    public static final String BUNDLE_TRACK = "BUNDLE_TRACK";
-    public static final String BUNDLE_TRACK_LIST = "BUNDLE_TRACK_LIST";
-
     // Int
     public static final int MAX_SEEK_BAR = 100;
 }

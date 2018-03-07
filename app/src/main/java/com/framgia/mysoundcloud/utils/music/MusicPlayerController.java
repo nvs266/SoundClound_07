@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Constant;
 
 import java.io.IOException;
@@ -29,13 +30,17 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     private ScheduledExecutorService mExecutor;
     private Runnable mSeekBarPositionUpdateTask;
     private Handler mHandler;
-    private Notification mNotification;
     private MediaPlayer mMediaPlayer;
     private PlaybackInfoListener mListener;
     private int mCurrentTrackPosition;
     private List<Track> mTracks;
     @PlaybackInfoListener.State
     private int mState;
+    private MusicService mMusicService;
+
+    public MusicPlayerController(MusicService musicService) {
+        mMusicService = musicService;
+    }
 
     /**
      * handle both case: 1 track or list track
@@ -63,16 +68,6 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
         if (mMediaPlayer == null) return;
         mMediaPlayer.release();
         mMediaPlayer = null;
-    }
-
-    /**
-     * just return true when music is playing
-     *
-     * @return
-     */
-    @Override
-    public boolean isPlaying() {
-        return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 
     /**
@@ -182,11 +177,6 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     }
 
     @Override
-    public Notification getMusicNotification() {
-        return null;
-    }
-
-    @Override
     public Track getCurrentTrack() {
         return mTracks != null ? mTracks.get(mCurrentTrackPosition) : null;
     }
@@ -256,6 +246,11 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
 
     private void notifyChangingState(@PlaybackInfoListener.State int state) {
         mState = state;
+        if (mMusicService != null) {
+            if (state == PlaybackInfoListener.State.PREPARE) mMusicService.loadImage();
+            mMusicService.initializeNotification(state);
+        }
+
         if (mListener == null) return;
         mListener.onStateChanged(mState);
     }
