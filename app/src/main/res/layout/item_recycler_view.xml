@@ -14,12 +14,12 @@
             android:layout_height="wrap_content"
             android:text="@string/msg_top_50"
             android:layout_marginStart="@dimen/dp_8"
-            app:layout_constraintBottom_toBottomOf="@id/action_image_play"
+            app:layout_constraintBottom_toBottomOf="@id/action_image_play_list"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/action_image_play"
+            android:id="@+id/action_image_play_list"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_30"
             android:layout_marginBottom="@dimen/dp_4"
@@ -39,7 +39,7 @@
             android:paddingBottom="@dimen/dp_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/action_image_play" />
+            app:layout_constraintTop_toBottomOf="@+id/action_image_play_list" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
 

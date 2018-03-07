@@ -2,7 +2,7 @@ package com.framgia.mysoundcloud.screen.musicgenres;
 
 
 import android.app.ProgressDialog;
-import android.os.Bundle;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,17 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BaseFragment;
+import com.framgia.mysoundcloud.screen.main.MainActivity;
 import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
+import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Constant;
 import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,13 +32,14 @@ import java.util.ArrayList;
 
 public class MusicGenresFragment extends BaseFragment implements
         MusicGenresContract.View, AdapterView.OnItemSelectedListener,
-        MusicGenresAdapter.ItemClickListener {
+        MusicGenresAdapter.ItemClickListener, View.OnClickListener {
 
     private MusicGenresPresenter mPresenter;
     private MusicGenresAdapter mMusicGenresAdapter;
     private DialogManager mDialogManager;
     private ProgressDialog mProgressDialog;
     private Spinner mSpinnerGenres;
+    private List<Track> mTrackList;
 
     public MusicGenresFragment() {
         // Required empty public constructor
@@ -60,6 +65,9 @@ public class MusicGenresFragment extends BaseFragment implements
         recyclerView.setAdapter(mMusicGenresAdapter);
 
         mDialogManager = new DialogManager(getContext());
+
+        ImageView imagePlayingList = view.findViewById(R.id.action_image_play_list);
+        imagePlayingList.setOnClickListener(this);
     }
 
     @Override
@@ -86,6 +94,7 @@ public class MusicGenresFragment extends BaseFragment implements
     @Override
     public void showTracks(ArrayList<Track> trackList) {
         mMusicGenresAdapter.replaceData(trackList);
+        this.mTrackList = trackList;
     }
 
     @Override
@@ -118,8 +127,31 @@ public class MusicGenresFragment extends BaseFragment implements
 
     @Override
     public void onItemClicked(Track track) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Constant.BUNDLE_TRACK, track);
-        new Navigator(getActivity()).startActivity(PlayMusicActivity.class, bundle, true);
+        playTracks(track);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_image_play_list:
+                if (this.mTrackList == null || mTrackList.isEmpty()) return;
+                playTracks(mTrackList.toArray(new Track[mTrackList.size()]));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void playTracks(Track... tracks) {
+        if (tracks == null || tracks.length == 0) return;
+
+        Intent intent = new Intent(getActivity(), MusicService.class);
+        getActivity().startService(intent);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity == null) return;
+
+        mainActivity.playTracks(tracks);
+        new Navigator(getActivity()).startActivity(PlayMusicActivity.class, false);
     }
 }
