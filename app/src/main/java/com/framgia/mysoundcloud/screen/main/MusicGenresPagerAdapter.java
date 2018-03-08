@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresAdapter;
 import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresFragment;
 
 /**
@@ -13,14 +14,16 @@ import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresFragment;
 public class MusicGenresPagerAdapter extends FragmentPagerAdapter {
 
     private static final int TAB_NUMBER = 2;
+    private MusicGenresAdapter.TrackListListener mListener;
 
-    public MusicGenresPagerAdapter(FragmentManager fm) {
-        super(fm);
+    public MusicGenresPagerAdapter(FragmentManager supportFragmentManager, MusicGenresAdapter.TrackListListener listener) {
+        super(supportFragmentManager);
+        this.mListener = listener;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return new MusicGenresFragment();
+        return MusicGenresFragment.newInstance(mListener);
     }
 
     @Override

@@ -35,4 +35,9 @@ public final class Constant {
 
     // Int
     public static final int MAX_SEEK_BAR = 100;
+
+    // Bundle
+    public static final String ARGUMENT_TRACK_LIST_LISTENER = "ARGUMENT_TRACK_LIST_LISTENER";
+    public static final String ARGUMENT_NEXT_UP_LISTENER = "ARGUMENT_NEXT_UP_LISTENER";
+
 }

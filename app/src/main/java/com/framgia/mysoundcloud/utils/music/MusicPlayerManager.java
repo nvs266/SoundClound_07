@@ -2,6 +2,8 @@ package com.framgia.mysoundcloud.utils.music;
 
 import com.framgia.mysoundcloud.data.model.Track;
 
+import java.util.List;
+
 /**
  * Created by sonng266 on 04/03/2018.
  */
@@ -29,4 +31,10 @@ public interface MusicPlayerManager {
     Track getCurrentTrack();
 
     int getCurrentState();
+
+    List<Track> getListTrack();
+
+    void playTrackAtPosition(int position);
+
+    void addToNextUp(Track track);
 }
