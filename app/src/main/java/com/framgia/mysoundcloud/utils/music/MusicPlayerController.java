@@ -1,6 +1,5 @@
 package com.framgia.mysoundcloud.utils.music;
 
-import android.app.Notification;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -253,12 +252,5 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
 
         if (mListener == null) return;
         mListener.onStateChanged(mState);
-    }
-
-    public static boolean downloadTrack(Track track) {
-        if (track.isDownloadable()) {
-            // download
-        }
-        return track.isDownloadable();
     }
 }
