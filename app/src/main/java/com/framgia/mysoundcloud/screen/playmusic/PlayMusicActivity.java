@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.ActivityCompat;
@@ -35,7 +36,7 @@ import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 public class PlayMusicActivity extends AppCompatActivity
-        implements PlayMusicContract.View, View.OnClickListener, NextUpDialogFragment.Listener, DownloadTrackManager.DownloadListener {
+        implements PlayMusicContract.View, View.OnClickListener, DownloadTrackManager.DownloadListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1;
     private DialogManager mDialogManager;
@@ -81,8 +82,11 @@ public class PlayMusicActivity extends AppCompatActivity
                 break;
             case R.id.action_show_next_up:
                 if (mBound) {
-                    BottomSheetDialogFragment bottomSheetDialogFragment = NextUpDialogFragment.newInstance(mMusicService.getListTrack());
-                    bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                    BottomSheetDialogFragment bottomSheetDialogFragment =
+                            NextUpDialogFragment.newInstance(mMusicService.getListTrack(),
+                                    mNextUpListener);
+                    bottomSheetDialogFragment.show(
+                            getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
                 }
                 break;
             default:
@@ -146,13 +150,6 @@ public class PlayMusicActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNextUpItemClicked(int position) {
-        if (mBound) {
-            mMusicService.playTrackAtPosition(position);
-        }
-    }
-
-    @Override
     public void onDownloadError(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -160,6 +157,16 @@ public class PlayMusicActivity extends AppCompatActivity
     @Override
     public void onDownloading() {
         Toast.makeText(this, getString(R.string.msg_downloading), Toast.LENGTH_SHORT).show();
+    }
+
+    public void showLoadingIndicator() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mImagePlay.setVisibility(View.INVISIBLE);
+    }
+
+    public void hideLoadingIndicator() {
+        mProgressBar.setVisibility(View.GONE);
+        mImagePlay.setVisibility(View.VISIBLE);
     }
 
     private void initializePermissionDownload() {
@@ -236,16 +243,6 @@ public class PlayMusicActivity extends AppCompatActivity
         mTextEndTime.setText(StringUtil.parseMilliSecondsToTimer(mCurrentTrack.getDuration()));
     }
 
-    public void showLoadingIndicator() {
-        mProgressBar.setVisibility(View.VISIBLE);
-        mImagePlay.setVisibility(View.INVISIBLE);
-    }
-
-    public void hideLoadingIndicator() {
-        mProgressBar.setVisibility(View.GONE);
-        mImagePlay.setVisibility(View.VISIBLE);
-    }
-
     private void updateUIWithMediaState(@PlaybackInfoListener.State int state) {
         switch (state) {
             case PlaybackListener.State.PREPARE:
@@ -265,6 +262,26 @@ public class PlayMusicActivity extends AppCompatActivity
                 break;
         }
     }
+
+    private NextUpDialogFragment.NextUpItemClickedListener mNextUpListener =
+            new NextUpDialogFragment.NextUpItemClickedListener() {
+                @Override
+                public void onTrackPositionClicked(int position) {
+                    if (mBound) {
+                        mMusicService.playTrackAtPosition(position);
+                    }
+                }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+
+                }
+            };
 
     private ServiceConnection mConnection = new ServiceConnection() {
 

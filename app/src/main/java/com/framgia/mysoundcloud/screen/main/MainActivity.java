@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -24,11 +25,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresAdapter;
 import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
 import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainViewConstract.View,
         SearchView.OnQueryTextListener, TabLayout.OnTabSelectedListener, View.OnClickListener {
@@ -67,6 +71,12 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         super.onStop();
         unbindService(mConnection);
         mBound = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mMusicService != null) mMusicService.setPlaybackListener(null);
+        super.onDestroy();
     }
 
     @Override
@@ -148,6 +158,29 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
+
+    public void showLoadingIndicator() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mImageChangeState.setVisibility(View.INVISIBLE);
+    }
+
+    public void hideLoadingIndicator() {
+        mProgressBar.setVisibility(View.GONE);
+        mImageChangeState.setVisibility(View.VISIBLE);
+    }
+
+    private void updateUIWithTrack(Track track) {
+        if (track == null) return;
+
+        mLayoutMiniControl.setVisibility(View.VISIBLE);
+        if (track == mTrack) return;
+
+        Glide.with(this).load(track.getArtworkUrl()).into(mImageSong);
+        mTextTitle.setText(track.getTitle());
+        mTextArtist.setText(track.getUserName());
+        mTrack = track;
+    }
+
     private void initializeToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -175,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
         mLayoutMiniControl.setOnClickListener(this);
 
-        mViewPager.setAdapter(new MusicGenresPagerAdapter(getSupportFragmentManager()));
+        mViewPager.setAdapter(new MusicGenresPagerAdapter(getSupportFragmentManager(), mTrackListListener));
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.addOnTabSelectedListener(this);
 
@@ -212,11 +245,15 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         });
     }
 
+    private void playTracks(Track... tracks) {
+        if (tracks == null || tracks.length == 0 || mMusicService == null) return;
 
-    public void playTracks(Track... tracks) {
-        if (mBound) {
-            mMusicService.playTracks(tracks);
-        }
+        mMusicService.playTracks(tracks);
+
+        Intent intent = new Intent(this, MusicService.class);
+        startService(intent);
+
+        new Navigator(this).startActivity(PlayMusicActivity.class, false);
     }
 
     private void updateUIWithState(@PlaybackInfoListener.State int state) {
@@ -237,28 +274,6 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
             default:
                 break;
         }
-    }
-
-    public void showLoadingIndicator() {
-        mProgressBar.setVisibility(View.VISIBLE);
-        mImageChangeState.setVisibility(View.INVISIBLE);
-    }
-
-    public void hideLoadingIndicator() {
-        mProgressBar.setVisibility(View.GONE);
-        mImageChangeState.setVisibility(View.VISIBLE);
-    }
-
-    private void updateUIWithTrack(Track track) {
-        if (track == null) return;
-
-        mLayoutMiniControl.setVisibility(View.VISIBLE);
-        if (track == mTrack) return;
-
-        Glide.with(this).load(track.getArtworkUrl()).into(mImageSong);
-        mTextTitle.setText(track.getTitle());
-        mTextArtist.setText(track.getUserName());
-        mTrack = track;
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -291,5 +306,31 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         }
     };
 
+    private MusicGenresAdapter.TrackListListener mTrackListListener = new MusicGenresAdapter.TrackListListener() {
+        @Override
+        public void onTrackClicked(Track track) {
+            playTracks(track);
+        }
 
+        @Override
+        public void onAddedToNextUp(Track track) {
+            if (mTrack == null) playTracks(track);
+            else if (mBound) mMusicService.addToNextUp(track);
+        }
+
+        @Override
+        public void onPlayList(List<Track> tracks) {
+            playTracks(tracks.toArray(new Track[tracks.size()]));
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+
+        }
+    };
 }

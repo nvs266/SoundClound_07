@@ -1,6 +1,7 @@
 package com.framgia.mysoundcloud.screen.musicgenres;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,9 +16,8 @@ import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.remote.DownloadTrackManager;
-import com.framgia.mysoundcloud.screen.BaseRecylerViewAdapter;
+import com.framgia.mysoundcloud.screen.BaseRecyclerViewAdapter;
 import com.framgia.mysoundcloud.utils.StringUtil;
-import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +26,16 @@ import java.util.List;
  * Created by sonng266 on 02/03/2018.
  */
 
-public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapter.ItemViewHolder>
+public class MusicGenresAdapter extends BaseRecyclerViewAdapter<MusicGenresAdapter.ItemViewHolder>
         implements DownloadTrackManager.DownloadListener {
 
     private List<Track> mTracks;
-    private ItemClickListener mItemClickListener;
+    private TrackListListener mTrackListListener;
     private LayoutInflater mLayoutInflater;
 
-    protected MusicGenresAdapter(Context context, ItemClickListener itemClickListener) {
+    MusicGenresAdapter(Context context, TrackListListener trackListListener) {
         super(context);
-        this.mItemClickListener = itemClickListener;
+        this.mTrackListListener = trackListListener;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
             mLayoutInflater = LayoutInflater.from(getContext());
         }
         View layoutItem = mLayoutInflater.inflate(R.layout.item_song, parent, false);
-        return new ItemViewHolder(layoutItem, mItemClickListener);
+        return new ItemViewHolder(layoutItem, mTrackListListener);
     }
 
     @Override
@@ -59,17 +59,6 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
         return mTracks == null ? 0 : mTracks.size();
     }
 
-    void replaceData(List<Track> tracks) {
-        if (mTracks == null) mTracks = new ArrayList<>();
-
-        mTracks.clear();
-        if (tracks != null) {
-            mTracks.addAll(tracks);
-        }
-
-        notifyDataSetChanged();
-    }
-
     @Override
     public void onDownloadError(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
@@ -79,6 +68,17 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
     public void onDownloading() {
         Toast.makeText(getContext(), getContext().getString(R.string.msg_downloading),
                 Toast.LENGTH_SHORT).show();
+    }
+
+    void replaceData(List<Track> tracks) {
+        if (mTracks == null) mTracks = new ArrayList<>();
+
+        mTracks.clear();
+        if (tracks != null) {
+            mTracks.addAll(tracks);
+        }
+
+        notifyDataSetChanged();
     }
 
     /**
@@ -95,7 +95,7 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
         private Track mTrack;
         private TextView mTextOptions;
 
-        ItemViewHolder(View itemView, final ItemClickListener itemClickListener) {
+        ItemViewHolder(View itemView, final TrackListListener trackListListener) {
             super(itemView);
 
             mTextTitle = itemView.findViewById(R.id.text_title);
@@ -110,7 +110,8 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClickListener.onItemClicked(mTrack);
+                    if (trackListListener == null) return;
+                    trackListListener.onTrackClicked(mTrack);
                 }
             });
         }
@@ -139,10 +140,8 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.action_add_to_next_up:
-                                    new DialogManager(getContext())
-                                            .dialogMessage(getContext()
-                                                            .getString(R.string.msg_feature_is_coming),
-                                                    getContext().getString(R.string.msg_opps));
+                                    if (mTrackListListener == null) break;
+                                    mTrackListListener.onAddedToNextUp(mTrack);
                                     break;
                                 case R.id.action_download:
                                     new DownloadTrackManager(getContext(),
@@ -163,9 +162,14 @@ public class MusicGenresAdapter extends BaseRecylerViewAdapter<MusicGenresAdapte
 
 
     /**
-     * ItemClickListener
+     * TrackListListener
      */
-    public interface ItemClickListener {
-        void onItemClicked(Track track);
+    public interface TrackListListener extends Parcelable {
+        void onTrackClicked(Track track);
+
+        void onAddedToNextUp(Track track);
+
+        void onPlayList(List<Track> tracks);
     }
+
 }

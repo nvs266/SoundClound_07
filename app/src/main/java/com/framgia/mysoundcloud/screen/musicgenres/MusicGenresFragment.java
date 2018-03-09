@@ -2,7 +2,7 @@ package com.framgia.mysoundcloud.screen.musicgenres;
 
 
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +16,7 @@ import android.widget.Spinner;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BaseFragment;
-import com.framgia.mysoundcloud.screen.main.MainActivity;
-import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
-import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Constant;
-import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.ArrayList;
@@ -31,8 +27,7 @@ import java.util.List;
  */
 
 public class MusicGenresFragment extends BaseFragment implements
-        MusicGenresContract.View, AdapterView.OnItemSelectedListener,
-        MusicGenresAdapter.ItemClickListener, View.OnClickListener {
+        MusicGenresContract.View, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     private MusicGenresPresenter mPresenter;
     private MusicGenresAdapter mMusicGenresAdapter;
@@ -40,6 +35,15 @@ public class MusicGenresFragment extends BaseFragment implements
     private ProgressDialog mProgressDialog;
     private Spinner mSpinnerGenres;
     private List<Track> mTrackList;
+    private MusicGenresAdapter.TrackListListener mTrackListListener;
+
+    public static MusicGenresFragment newInstance(MusicGenresAdapter.TrackListListener listListener) {
+        MusicGenresFragment musicGenresFragment = new MusicGenresFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(Constant.ARGUMENT_TRACK_LIST_LISTENER, listListener);
+        musicGenresFragment.setArguments(args);
+        return musicGenresFragment;
+    }
 
     public MusicGenresFragment() {
         // Required empty public constructor
@@ -47,6 +51,9 @@ public class MusicGenresFragment extends BaseFragment implements
 
     @Override
     protected void initializeUI(View view) {
+
+        mTrackListListener = getArguments().getParcelable(Constant.ARGUMENT_TRACK_LIST_LISTENER);
+
         mPresenter = new MusicGenresPresenter();
         mPresenter.setView(this);
 
@@ -58,7 +65,7 @@ public class MusicGenresFragment extends BaseFragment implements
         mSpinnerGenres.setOnItemSelectedListener(this);
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-        mMusicGenresAdapter = new MusicGenresAdapter(getContext(), this);
+        mMusicGenresAdapter = new MusicGenresAdapter(getContext(), mTrackListListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
@@ -126,32 +133,15 @@ public class MusicGenresFragment extends BaseFragment implements
     }
 
     @Override
-    public void onItemClicked(Track track) {
-        playTracks(track);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.action_image_play_list:
-                if (this.mTrackList == null || mTrackList.isEmpty()) return;
-                playTracks(mTrackList.toArray(new Track[mTrackList.size()]));
+                if (this.mTrackList == null || mTrackList.isEmpty() ||
+                        mTrackListListener == null) break;
+                mTrackListListener.onPlayList(mTrackList);
                 break;
             default:
                 break;
         }
-    }
-
-    private void playTracks(Track... tracks) {
-        if (tracks == null || tracks.length == 0) return;
-
-        Intent intent = new Intent(getActivity(), MusicService.class);
-        getActivity().startService(intent);
-
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity == null) return;
-
-        mainActivity.playTracks(tracks);
-        new Navigator(getActivity()).startActivity(PlayMusicActivity.class, false);
     }
 }

@@ -58,7 +58,10 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         for (int i = 0; i < jsonCollection.length(); i++) {
             JSONObject jsonTrack = jsonCollection.getJSONObject(i)
                     .getJSONObject(Track.TrackEntity.TRACK);
-            trackList.add(parseJsonObjectToTrackObject(jsonTrack));
+            Track track = parseJsonObjectToTrackObject(jsonTrack);
+            if (track != null) {
+                trackList.add(track);
+            }
         }
         return trackList;
     }
@@ -93,28 +96,34 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         return null;
     }
 
-    private Track parseJsonObjectToTrackObject(JSONObject jsonTrack) throws JSONException {
+    private Track parseJsonObjectToTrackObject(JSONObject jsonTrack) {
         Track track = new Track();
-        JSONObject jsonUser = jsonTrack.getJSONObject(Track.TrackEntity.USER);
-        String artworkUrl = jsonTrack.getString(Track.TrackEntity.ARTWORK_URL);
 
-        // Null artwork is replaced by user's avatar
-        if (artworkUrl.equals(Constant.NULL_RESULT)) {
-            artworkUrl = jsonTrack.getJSONObject(Track.TrackEntity.USER)
-                    .getString(Track.TrackEntity.AVATAR_URL);
+        try {
+            JSONObject jsonUser = jsonTrack.getJSONObject(Track.TrackEntity.USER);
+            String artworkUrl = jsonTrack.getString(Track.TrackEntity.ARTWORK_URL);
+
+            // Null artwork is replaced by user's avatar
+            if (artworkUrl.equals(Constant.NULL_RESULT)) {
+                artworkUrl = jsonTrack.getJSONObject(Track.TrackEntity.USER)
+                        .getString(Track.TrackEntity.AVATAR_URL);
+            }
+
+            track.setArtworkUrl(parseArtworkUrlToBetter(artworkUrl));
+            track.setDescription(jsonTrack.getString(Track.TrackEntity.DESCRIPTION));
+            track.setDownloadable(jsonTrack.getBoolean(Track.TrackEntity.DOWNLOADABLE));
+            track.setDownloadUrl(jsonTrack.getString(Track.TrackEntity.DOWNLOAD_URL));
+            track.setDuration(jsonTrack.getInt(Track.TrackEntity.DURATION));
+            track.setId(jsonTrack.getInt(Track.TrackEntity.ID));
+            track.setPlaybackCount(jsonTrack.getInt(Track.TrackEntity.PLAYBACK_COUNT));
+            track.setTitle(jsonTrack.getString(Track.TrackEntity.TITLE));
+            track.setUri(StringUtil.getUrlStreamTrack(jsonTrack.getString(Track.TrackEntity.URI)));
+            track.setLikesCount(jsonTrack.getInt(Track.TrackEntity.LIKES_COUNT));
+            track.setUserName(jsonUser.getString(Track.TrackEntity.USERNAME));
+        } catch (JSONException e) {
+            return null;
         }
 
-        track.setArtworkUrl(parseArtworkUrlToBetter(artworkUrl));
-        track.setDescription(jsonTrack.getString(Track.TrackEntity.DESCRIPTION));
-        track.setDownloadable(jsonTrack.getBoolean(Track.TrackEntity.DOWNLOADABLE));
-        track.setDownloadUrl(jsonTrack.getString(Track.TrackEntity.DOWNLOAD_URL));
-        track.setDuration(jsonTrack.getInt(Track.TrackEntity.DURATION));
-        track.setId(jsonTrack.getInt(Track.TrackEntity.ID));
-        track.setPlaybackCount(jsonTrack.getInt(Track.TrackEntity.PLAYBACK_COUNT));
-        track.setTitle(jsonTrack.getString(Track.TrackEntity.TITLE));
-        track.setUri(StringUtil.getUrlStreamTrack(jsonTrack.getString(Track.TrackEntity.URI)));
-        track.setLikesCount(jsonTrack.getInt(Track.TrackEntity.LIKES_COUNT));
-        track.setUserName(jsonUser.getString(Track.TrackEntity.USERNAME));
         return track;
     }
 }

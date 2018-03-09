@@ -21,6 +21,8 @@ import com.framgia.mysoundcloud.utils.music.MusicPlayerController;
 import com.framgia.mysoundcloud.utils.music.MusicPlayerManager;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 
+import java.util.List;
+
 
 public class MusicService extends Service {
 
@@ -246,6 +248,21 @@ public class MusicService extends Service {
         } else {
             mBuilder.setLargeIcon(mBitmap);
         }
+    }
+
+    public List<Track> getListTrack() {
+        if (mMusicPlayerManager == null) return null;
+        return mMusicPlayerManager.getListTrack();
+    }
+
+    public void playTrackAtPosition(int position) {
+        if (mMusicPlayerManager == null) return;
+        mMusicPlayerManager.playTrackAtPosition(position);
+    }
+
+    public void addToNextUp(Track track) {
+        if (mMusicPlayerManager == null) return;
+        mMusicPlayerManager.addToNextUp(track);
     }
 
     public class LocalBinder extends Binder {

@@ -186,6 +186,23 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     }
 
     @Override
+    public List<Track> getListTrack() {
+        return mTracks;
+    }
+
+    @Override
+    public void playTrackAtPosition(int position) {
+        mCurrentTrackPosition = position;
+        prepareLoadingTrack();
+    }
+
+    @Override
+    public void addToNextUp(Track track) {
+        if (mTracks == null || mTracks.isEmpty()) return;
+        mTracks.add(track);
+    }
+
+    @Override
     public void onPrepared(MediaPlayer mp) {
         mMediaPlayer.start();
         notifyChangingState(PlaybackInfoListener.State.PLAYING);
