@@ -55,8 +55,21 @@ public class Track implements Parcelable {
         mPlaybackCount = in.readInt();
     }
 
+    /**
+     * Set default variables
+     */
     public Track() {
-
+        mArtworkUrl = "";
+        mDescription = "";
+        mDownloadable = false;
+        mDownloadUrl = "";
+        mDuration = 0;
+        mId = 0;
+        mLikesCount = 0;
+        mTitle = "";
+        mUri = "";
+        mUserName = "";
+        mPlaybackCount = 0;
     }
 
     public String getArtworkUrl() {

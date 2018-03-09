@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BaseFragment;
+import com.framgia.mysoundcloud.screen.main.MainViewConstract;
 import com.framgia.mysoundcloud.utils.Constant;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
@@ -35,9 +36,9 @@ public class MusicGenresFragment extends BaseFragment implements
     private ProgressDialog mProgressDialog;
     private Spinner mSpinnerGenres;
     private List<Track> mTrackList;
-    private MusicGenresAdapter.TrackListListener mTrackListListener;
+    private MainViewConstract.TrackListListener mTrackListListener;
 
-    public static MusicGenresFragment newInstance(MusicGenresAdapter.TrackListListener listListener) {
+    public static MusicGenresFragment newInstance(MainViewConstract.TrackListListener listListener) {
         MusicGenresFragment musicGenresFragment = new MusicGenresFragment();
         Bundle args = new Bundle();
         args.putParcelable(Constant.ARGUMENT_TRACK_LIST_LISTENER, listListener);
@@ -86,7 +87,7 @@ public class MusicGenresFragment extends BaseFragment implements
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.spinner_genres:
-                mPresenter.loadTrack(Constant.MUSIC_GENRES[position],
+                mPresenter.loadTrack(getContext(), Constant.MUSIC_GENRES[position],
                         Constant.LIMIT_DEFAULT, Constant.OFFSET_DEFAULT);
                 break;
             default:

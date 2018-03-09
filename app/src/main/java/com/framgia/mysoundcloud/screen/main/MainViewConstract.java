@@ -1,12 +1,17 @@
 package com.framgia.mysoundcloud.screen.main;
 
+import android.os.Parcelable;
+
+import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BasePresenter;
+
+import java.util.List;
 
 /**
  * Created by sonng266 on 26/02/2018.
  */
 
-interface MainViewConstract {
+public interface MainViewConstract {
     /**
      * View.
      */
@@ -22,5 +27,16 @@ interface MainViewConstract {
      * Presenter.
      */
     interface Presenter extends BasePresenter<MainViewConstract.View> {
+    }
+
+    /**
+     * TrackListListener
+     */
+    interface TrackListListener extends Parcelable {
+        void onTrackClicked(Track track);
+
+        void onAddedToNextUp(Track track);
+
+        void onPlayList(List<Track> tracks);
     }
 }

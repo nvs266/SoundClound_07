@@ -12,8 +12,8 @@
             android:id="@+id/text_top_50"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/msg_top_50"
             android:layout_marginStart="@dimen/dp_8"
+            android:text="@string/msg_top_50"
             app:layout_constraintBottom_toBottomOf="@id/action_image_play_list"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_8"
             android:layout_marginStart="@dimen/dp_8"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/dp_8"
             android:paddingBottom="@dimen/dp_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

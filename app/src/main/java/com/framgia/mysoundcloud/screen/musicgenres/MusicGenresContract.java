@@ -1,5 +1,7 @@
 package com.framgia.mysoundcloud.screen.musicgenres;
 
+import android.content.Context;
+
 import com.framgia.mysoundcloud.screen.BasePresenter;
 import com.framgia.mysoundcloud.screen.BaseView;
 
@@ -18,6 +20,6 @@ interface MusicGenresContract {
      * Presenter.
      */
     interface Presenter extends BasePresenter<MusicGenresContract.View> {
-        void loadTrack(String genre, int limit, int offSet);
+        void loadTrack(Context context, String genre, int limit, int offSet);
     }
 }

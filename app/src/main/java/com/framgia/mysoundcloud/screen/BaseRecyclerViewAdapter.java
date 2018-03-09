@@ -12,8 +12,8 @@ public abstract class BaseRecyclerViewAdapter<V extends RecyclerView.ViewHolder>
 
     private final Context mContext;
 
-    protected BaseRecyclerViewAdapter(Context mContext) {
-        this.mContext = mContext;
+    protected BaseRecyclerViewAdapter(Context context) {
+        this.mContext = context;
     }
 
     protected Context getContext() {

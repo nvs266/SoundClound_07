@@ -1,6 +1,4 @@
-package com.framgia.mysoundcloud.screen.musicgenres;
-
-import android.content.Context;
+package com.framgia.mysoundcloud.screen.download;
 
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.repository.TrackRepository;
@@ -10,17 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by sonng266 on 27/02/2018.
+ * Created by sonng266 on 09/03/2018.
  */
 
-public class MusicGenresPresenter implements MusicGenresContract.Presenter,
+public class DownloadedTracksPresenter implements DownloadViewContract.Presenter,
         TrackDataSource.OnFetchDataListener<Track> {
 
-    private MusicGenresContract.View mView;
+    private DownloadViewContract.View mView;
 
     @Override
-    public void setView(MusicGenresContract.View view) {
-        this.mView = view;
+    public void setView(DownloadViewContract.View view) {
+        mView = view;
     }
 
     @Override
@@ -34,11 +32,8 @@ public class MusicGenresPresenter implements MusicGenresContract.Presenter,
     }
 
     @Override
-    public void loadTrack(Context context, String genre, int limit, int offSet) {
-        mView.showLoadingIndicator();
-
-        TrackRepository trackRepository = TrackRepository.getInstance();
-        trackRepository.getTracksRemote(genre, limit, offSet, this);
+    public void loadTrack() {
+        TrackRepository.getInstance().getTracksLocal(this);
     }
 
     @Override
@@ -47,14 +42,14 @@ public class MusicGenresPresenter implements MusicGenresContract.Presenter,
 
         if (data == null || data.isEmpty()) {
             mView.showNoTrack();
-            return;
+        } else {
+            mView.showTracks((ArrayList<Track>) data);
         }
-
-        mView.showTracks((ArrayList<Track>) data);
     }
 
     @Override
     public void onFetchDataFailure(String message) {
+        mView.hideLoadingIndicator();
         mView.showLoadingTracksError(message);
     }
 }
