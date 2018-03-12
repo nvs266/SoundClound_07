@@ -24,6 +24,8 @@
     <string name="text_icon">⋮</string>
     <string name="action_add_to_next_up">Add to Next up</string>
     <string name="action_download">Download</string>
+    <string name="msg_load_downloaded_failed">Load downloaded tracks failed</string>
+    <string name="msg_0_track">0 track</string>
     <string-array name="music_genres">
         <item>All music</item>
         <item>All audio</item>

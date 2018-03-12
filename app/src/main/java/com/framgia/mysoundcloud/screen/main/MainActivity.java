@@ -25,7 +25,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
-import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresAdapter;
 import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
 import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Navigator;
@@ -208,8 +207,10 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
         mLayoutMiniControl.setOnClickListener(this);
 
-        mViewPager.setAdapter(new MusicGenresPagerAdapter(getSupportFragmentManager(), mTrackListListener));
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mViewPager.setAdapter(
+                new MusicGenresPagerAdapter(getSupportFragmentManager(), mTrackListListener));
+        mViewPager.addOnPageChangeListener(
+                new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.addOnTabSelectedListener(this);
 
         mProgressBar.getIndeterminateDrawable()
@@ -306,31 +307,32 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         }
     };
 
-    private MusicGenresAdapter.TrackListListener mTrackListListener = new MusicGenresAdapter.TrackListListener() {
-        @Override
-        public void onTrackClicked(Track track) {
-            playTracks(track);
-        }
+    private MainViewConstract.TrackListListener mTrackListListener =
+            new MainViewConstract.TrackListListener() {
+                @Override
+                public void onTrackClicked(Track track) {
+                    playTracks(track);
+                }
 
-        @Override
-        public void onAddedToNextUp(Track track) {
-            if (mTrack == null) playTracks(track);
-            else if (mBound) mMusicService.addToNextUp(track);
-        }
+                @Override
+                public void onAddedToNextUp(Track track) {
+                    if (mTrack == null) playTracks(track);
+                    else if (mBound) mMusicService.addToNextUp(track);
+                }
 
-        @Override
-        public void onPlayList(List<Track> tracks) {
-            playTracks(tracks.toArray(new Track[tracks.size()]));
-        }
+                @Override
+                public void onPlayList(List<Track> tracks) {
+                    playTracks(tracks.toArray(new Track[tracks.size()]));
+                }
 
-        @Override
-        public int describeContents() {
-            return 0;
-        }
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
 
-        }
-    };
+                }
+            };
 }

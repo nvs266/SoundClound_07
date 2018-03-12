@@ -17,15 +17,16 @@ public class TrackRepository implements TrackDataSource.RemoteDataSource,
     private TrackDataSource.LocalDataSource mTrackLocalDataSource;
     private TrackDataSource.RemoteDataSource mTrackRemoteDataSource;
 
-    private TrackRepository(
-            LocalDataSource trackLocalDataSource, RemoteDataSource trackRemoteDataSource) {
-        this.mTrackLocalDataSource = trackLocalDataSource;
-        this.mTrackRemoteDataSource = trackRemoteDataSource;
+    private TrackRepository(LocalDataSource trackLocalDataSource,
+                            RemoteDataSource trackRemoteDataSource) {
+        mTrackLocalDataSource = trackLocalDataSource;
+        mTrackRemoteDataSource = trackRemoteDataSource;
     }
 
     public static TrackRepository getInstance() {
         if (sTrackRepository == null) {
-            sTrackRepository = new TrackRepository(TrackLocalDataSource.getInstance(),
+            sTrackRepository = new TrackRepository(
+                    TrackLocalDataSource.getInstance(),
                     TrackRemoteDataSource.getInstance());
         }
         return sTrackRepository;

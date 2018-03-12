@@ -1,7 +1,6 @@
 package com.framgia.mysoundcloud.screen.musicgenres;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +16,7 @@ import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.remote.DownloadTrackManager;
 import com.framgia.mysoundcloud.screen.BaseRecyclerViewAdapter;
+import com.framgia.mysoundcloud.screen.main.MainViewConstract;
 import com.framgia.mysoundcloud.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ public class MusicGenresAdapter extends BaseRecyclerViewAdapter<MusicGenresAdapt
         implements DownloadTrackManager.DownloadListener {
 
     private List<Track> mTracks;
-    private TrackListListener mTrackListListener;
+    private MainViewConstract.TrackListListener mTrackListListener;
     private LayoutInflater mLayoutInflater;
 
-    MusicGenresAdapter(Context context, TrackListListener trackListListener) {
+    MusicGenresAdapter(Context context, MainViewConstract.TrackListListener trackListListener) {
         super(context);
         this.mTrackListListener = trackListListener;
     }
@@ -95,7 +95,7 @@ public class MusicGenresAdapter extends BaseRecyclerViewAdapter<MusicGenresAdapt
         private Track mTrack;
         private TextView mTextOptions;
 
-        ItemViewHolder(View itemView, final TrackListListener trackListListener) {
+        ItemViewHolder(View itemView, final MainViewConstract.TrackListListener trackListListener) {
             super(itemView);
 
             mTextTitle = itemView.findViewById(R.id.text_title);
@@ -159,17 +159,4 @@ public class MusicGenresAdapter extends BaseRecyclerViewAdapter<MusicGenresAdapt
             });
         }
     }
-
-
-    /**
-     * TrackListListener
-     */
-    public interface TrackListListener extends Parcelable {
-        void onTrackClicked(Track track);
-
-        void onAddedToNextUp(Track track);
-
-        void onPlayList(List<Track> tracks);
-    }
-
 }
