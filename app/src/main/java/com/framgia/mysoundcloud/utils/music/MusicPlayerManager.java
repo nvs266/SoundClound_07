@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface MusicPlayerManager {
 
-    void playTracks(Track... tracks);
 
     void release();
 
@@ -34,7 +33,9 @@ public interface MusicPlayerManager {
 
     List<Track> getListTrack();
 
-    void playTrackAtPosition(int position);
+    void playTrackAtPosition(int position, Track... tracks);
 
     void addToNextUp(Track track);
+
+    int getCurrentTrackPosition();
 }

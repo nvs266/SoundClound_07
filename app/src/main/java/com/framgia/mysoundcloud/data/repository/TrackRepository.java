@@ -59,15 +59,17 @@ public class TrackRepository implements TrackDataSource.RemoteDataSource,
     }
 
     @Override
-    public void getTracksRemote(String genre, int limit, int offSet, OnFetchDataListener<Track> listener) {
+    public void getTracksRemote(String genre, int limit, int offSet,
+                                OnFetchDataListener<Track> listener) {
         if (mTrackRemoteDataSource == null) return;
         mTrackRemoteDataSource.getTracksRemote(genre, limit, offSet, listener);
     }
 
     @Override
-    public void searchTracksRemote(String trackName, OnFetchDataListener<Track> listener) {
+    public void searchTracksRemote(String trackName, int offSet,
+                                   OnFetchDataListener<Track> listener) {
         if (mTrackRemoteDataSource != null) {
-            mTrackRemoteDataSource.searchTracksRemote(trackName, listener);
+            mTrackRemoteDataSource.searchTracksRemote(trackName, offSet, listener);
         }
     }
 }

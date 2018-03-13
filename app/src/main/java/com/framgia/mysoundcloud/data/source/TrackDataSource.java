@@ -27,9 +27,10 @@ public interface TrackDataSource {
      * RemoteData For Tracks
      */
     interface RemoteDataSource extends TrackDataSource {
-        void getTracksRemote(String genre, int limit, int offSet, OnFetchDataListener<Track> listener);
+        void getTracksRemote(String genre, int limit, int offSet,
+                             OnFetchDataListener<Track> listener);
 
-        void searchTracksRemote(String trackName, OnFetchDataListener<Track> listener);
+        void searchTracksRemote(String trackName, int offSet, OnFetchDataListener<Track> listener);
     }
 
     interface OnFetchDataListener<T> {

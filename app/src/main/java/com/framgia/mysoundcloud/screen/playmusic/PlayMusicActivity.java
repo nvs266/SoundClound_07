@@ -36,7 +36,8 @@ import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
 
 public class PlayMusicActivity extends AppCompatActivity
-        implements PlayMusicContract.View, View.OnClickListener, DownloadTrackManager.DownloadListener {
+        implements PlayMusicContract.View, View.OnClickListener,
+        DownloadTrackManager.DownloadListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1;
     private DialogManager mDialogManager;
@@ -135,12 +136,14 @@ public class PlayMusicActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_WRITE_STORAGE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    new DownloadTrackManager(this, this).downloadTrack(mCurrentTrack);
+                    new DownloadTrackManager(this, this)
+                            .downloadTrack(mCurrentTrack);
                 } else {
                     Toast.makeText(mMusicService, R.string.msg_permission_denied, Toast.LENGTH_SHORT).show();
                 }
@@ -174,7 +177,7 @@ public class PlayMusicActivity extends AppCompatActivity
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    Constant.PERMISSONS, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                    Constant.PERMISSIONS, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
         } else {
             new DownloadTrackManager(this, this).downloadTrack(mCurrentTrack);
         }

@@ -10,6 +10,7 @@ import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
 
     private static final String QUERY_DIRECTORY_NAME = "%MySoundCloud%";
+    private static final String VOLUME_NAME_EXTERNAL = "external";
     private static TrackLocalDataSource sTrackLocalDataSource;
     private Context mContext;
 
@@ -37,7 +39,8 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
         ContentResolver contentResolver = mContext.getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null,
-                MediaStore.Audio.Media.DATA + " LIKE ?", new String[]{QUERY_DIRECTORY_NAME}, null);
+                MediaStore.Audio.Media.DATA + " LIKE ?",
+                new String[]{QUERY_DIRECTORY_NAME}, null);
 
         if (cursor == null) {
             listener.onFetchDataFailure(mContext.getString(R.string.msg_load_downloaded_failed));
@@ -73,7 +76,14 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
 
     @Override
     public boolean deleteTrack(Track track) {
-        return false;
+        File file = new File(track.getUri());
+        String where = MediaStore.MediaColumns.DATA + "=?";
+        String[] selectionArgs = new String[]{file.getAbsolutePath()};
+        ContentResolver contentResolver = mContext.getContentResolver();
+        Uri filesUri = MediaStore.Files.getContentUri(VOLUME_NAME_EXTERNAL);
+
+        contentResolver.delete(filesUri, where, selectionArgs);
+        return file.delete();
     }
 
     @Override

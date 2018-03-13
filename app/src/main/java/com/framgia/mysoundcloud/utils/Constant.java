@@ -30,7 +30,7 @@ public final class Constant {
 
     // String
     public static final String BREAK_LINE = "\n";
-    public static final String[] PERMISSONS =
+    public static final String[] PERMISSIONS =
             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
