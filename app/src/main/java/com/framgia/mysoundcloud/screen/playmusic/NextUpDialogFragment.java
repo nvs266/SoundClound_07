@@ -22,11 +22,12 @@ public class NextUpDialogFragment extends BottomSheetDialogFragment {
     private static List<Track> mTracks;
 
     public static NextUpDialogFragment newInstance(
-            List<Track> tracks, NextUpItemClickedListener listener) {
+            List<Track> tracks, NextUpItemClickedListener listener, int currentTrackPosition) {
         NextUpDialogFragment fragment = new NextUpDialogFragment();
         mTracks = tracks;
         Bundle args = new Bundle();
         args.putParcelable(Constant.ARGUMENT_NEXT_UP_LISTENER, listener);
+        args.putInt(Constant.ARGUMENT_CURRENT_TRACK_POSITION, currentTrackPosition);
         fragment.setArguments(args);
         return fragment;
     }
@@ -42,8 +43,10 @@ public class NextUpDialogFragment extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         NextUpItemClickedListener listener =
                 getArguments().getParcelable(Constant.ARGUMENT_NEXT_UP_LISTENER);
+        int currentTrackPosition = getArguments().getInt(Constant.ARGUMENT_CURRENT_TRACK_POSITION);
         RecyclerView recyclerView = (RecyclerView) view;
-        NextUpAdapter nextUpAdapter = new NextUpAdapter(getContext(), listener, mTracks);
+        NextUpAdapterTrack nextUpAdapter = new NextUpAdapterTrack(getContext(), listener, currentTrackPosition);
+        nextUpAdapter.replaceData(mTracks);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));

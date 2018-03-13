@@ -26,6 +26,9 @@
     <string name="action_download">Download</string>
     <string name="msg_load_downloaded_failed">Load downloaded tracks failed</string>
     <string name="msg_0_track">0 track</string>
+    <string name="msg_top">Top</string>
+    <string name="msg_no_song_found">No song found!</string>
+
     <string-array name="music_genres">
         <item>All music</item>
         <item>All audio</item>

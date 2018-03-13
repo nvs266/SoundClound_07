@@ -48,6 +48,7 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/constrain_layout_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
@@ -68,5 +69,5 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_70"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </RelativeLayout>

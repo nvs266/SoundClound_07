@@ -14,6 +14,7 @@ public final class Constant {
     // Network
     public static final String BASE_URL = "https://api-v2.soundcloud.com/";
     public static final String PARA_MUSIC_GENRE = "charts?kind=top&genre=soundcloud%3Agenres%3A";
+    public static final String PARA_SEARCH_TRACK = "search/tracks?facet=genre&limit=10&linked_partitioning=1&q=";
     public static final String PARA_OFFSET = "offset";
     public static final String PARA_STREAM = "stream";
     public static final String CLIENT_ID = "client_id";
@@ -39,5 +40,5 @@ public final class Constant {
     // Bundle
     public static final String ARGUMENT_TRACK_LIST_LISTENER = "ARGUMENT_TRACK_LIST_LISTENER";
     public static final String ARGUMENT_NEXT_UP_LISTENER = "ARGUMENT_NEXT_UP_LISTENER";
-
+    public static final String ARGUMENT_CURRENT_TRACK_POSITION = "ARGUMENT_CURRENT_TRACK_POSITION";
 }

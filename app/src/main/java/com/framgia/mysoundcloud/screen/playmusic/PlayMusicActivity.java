@@ -84,7 +84,7 @@ public class PlayMusicActivity extends AppCompatActivity
                 if (mBound) {
                     BottomSheetDialogFragment bottomSheetDialogFragment =
                             NextUpDialogFragment.newInstance(mMusicService.getListTrack(),
-                                    mNextUpListener);
+                                    mNextUpListener, mMusicService.getCurrentTrackPosition());
                     bottomSheetDialogFragment.show(
                             getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
                 }

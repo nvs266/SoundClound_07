@@ -1,7 +1,5 @@
 package com.framgia.mysoundcloud.screen.musicgenres;
 
-import android.content.Context;
-
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.repository.TrackRepository;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
@@ -34,7 +32,7 @@ public class MusicGenresPresenter implements MusicGenresContract.Presenter,
     }
 
     @Override
-    public void loadTrack(Context context, String genre, int limit, int offSet) {
+    public void loadTrack(String genre, int limit, int offSet) {
         mView.showLoadingIndicator();
 
         TrackRepository trackRepository = TrackRepository.getInstance();
@@ -51,10 +49,13 @@ public class MusicGenresPresenter implements MusicGenresContract.Presenter,
         }
 
         mView.showTracks((ArrayList<Track>) data);
+        mView.updateTextNumberTrack();
     }
 
     @Override
     public void onFetchDataFailure(String message) {
+        mView.hideLoadingIndicator();
+
         mView.showLoadingTracksError(message);
     }
 }

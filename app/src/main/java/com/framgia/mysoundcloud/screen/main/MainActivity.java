@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -26,10 +28,10 @@ import com.bumptech.glide.Glide;
 import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.playmusic.PlayMusicActivity;
+import com.framgia.mysoundcloud.screen.search.SearchFragment;
 import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
-import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.List;
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     private TextView mTextArtist;
     private ConstraintLayout mLayoutMiniControl;
     private Track mTrack;
+    private SearchFragment mSearchFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,18 +96,20 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     @Override
     public void showTabLayout() {
         mTabLayout.setVisibility(View.VISIBLE);
+        closeSearchFragment();
     }
 
     @Override
     public void hideTabLayout() {
         mTabLayout.setVisibility(View.GONE);
+        openSearchFragment();
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        new DialogManager(this).dialogMessage(getString(R.string.msg_feature_is_coming),
-                getString(R.string.msg_opps));
-        return false;
+        if (mSearchFragment == null) return false;
+        mSearchFragment.submitQuery(query);
+        return true;
     }
 
     @Override
@@ -228,28 +233,25 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         searchView.setQueryHint(getString(R.string.msg_finding_tracks));
         searchView.setOnQueryTextListener(this);
 
-        // Hanlde when searchView closed
         searchMenu.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                // do something
                 hideTabLayout();
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                // do something
                 showTabLayout();
                 return true;
             }
         });
     }
 
-    private void playTracks(Track... tracks) {
+    private void playTracks(int position, Track... tracks) {
         if (tracks == null || tracks.length == 0 || mMusicService == null) return;
 
-        mMusicService.playTracks(tracks);
+        mMusicService.playTrackAtPosition(position, tracks);
 
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
@@ -275,6 +277,19 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
             default:
                 break;
         }
+    }
+
+    private void openSearchFragment() {
+        mSearchFragment = SearchFragment.newInstance(mTrackListListener);
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.constrain_layout_main, mSearchFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void closeSearchFragment() {
+        getSupportFragmentManager().popBackStack();
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -309,20 +324,22 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
     private MainViewConstract.TrackListListener mTrackListListener =
             new MainViewConstract.TrackListListener() {
+
                 @Override
-                public void onTrackClicked(Track track) {
-                    playTracks(track);
+                public void onPlayedTrack(int position, List<Track> tracks) {
+                    if (tracks == null) return;
+                    playTracks(position, tracks.toArray(new Track[tracks.size()]));
                 }
 
+                /**
+                 * Neu dang choi nhac thi add vao danh sach choi tiep
+                 * Neu khong choi nhac mTrack == null => Choi luon bai nhac duoc add
+                 * @param track
+                 */
                 @Override
                 public void onAddedToNextUp(Track track) {
-                    if (mTrack == null) playTracks(track);
+                    if (mTrack == null) playTracks(0, track);
                     else if (mBound) mMusicService.addToNextUp(track);
-                }
-
-                @Override
-                public void onPlayList(List<Track> tracks) {
-                    playTracks(tracks.toArray(new Track[tracks.size()]));
                 }
 
                 @Override
