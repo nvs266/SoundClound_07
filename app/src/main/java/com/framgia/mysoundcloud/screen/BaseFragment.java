@@ -6,12 +6,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.framgia.mysoundcloud.data.model.Track;
+import com.framgia.mysoundcloud.screen.main.MainViewConstract;
+import com.framgia.mysoundcloud.utils.Constant;
+
+import java.util.List;
+
 
 /**
  * Created by sonng266 on 01/03/2018.
  */
 
 public abstract class BaseFragment extends Fragment {
+
+    protected MainViewConstract.TrackListListener mTrackListListener;
+    protected List<Track> mTracks;
+
+    protected static Bundle putBundle(MainViewConstract.TrackListListener listener) {
+        Bundle args = new Bundle();
+        args.putParcelable(Constant.ARGUMENT_TRACK_LIST_LISTENER, listener);
+        return args;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

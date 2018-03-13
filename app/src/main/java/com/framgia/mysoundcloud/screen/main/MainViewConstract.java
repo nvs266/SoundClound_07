@@ -33,10 +33,8 @@ public interface MainViewConstract {
      * TrackListListener
      */
     interface TrackListListener extends Parcelable {
-        void onTrackClicked(Track track);
+        void onPlayedTrack(int position, List<Track> tracks);
 
         void onAddedToNextUp(Track track);
-
-        void onPlayList(List<Track> tracks);
     }
 }

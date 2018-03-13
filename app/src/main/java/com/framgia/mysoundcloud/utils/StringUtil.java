@@ -23,6 +23,12 @@ public class StringUtil {
         return String.format("%s?%s=%s", url, Constant.CLIENT_ID, BuildConfig.API_KEY);
     }
 
+    public static String convertUrlSearchTrack(String trackName, int offset) {
+        return String.format("%s%s%s&%s=%d&%s=%s", Constant.BASE_URL, Constant.PARA_SEARCH_TRACK, trackName,
+                Constant.PARA_OFFSET, offset, Constant.CLIENT_ID,
+                BuildConfig.API_KEY);
+    }
+
     public static String parseMilliSecondsToTimer(long milliseconds) {
         String parseTimer = "";
         String secondsString = "";
