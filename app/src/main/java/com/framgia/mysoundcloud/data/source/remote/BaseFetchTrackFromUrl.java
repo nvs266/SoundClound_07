@@ -20,22 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by sonng266 on 28/02/2018.
+ * Created by sonng266 on 13/03/2018.
  */
 
-public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> {
+public abstract class BaseFetchTrackFromUrl extends AsyncTask<String, Void, List<Track>> {
 
-    private TrackDataSource.OnFetchDataListener<Track> mListener;
-    private boolean mIsSearching;
+    protected TrackDataSource.OnFetchDataListener<Track> mListener;
 
-    public FetchTrackListFromUrl(TrackDataSource.OnFetchDataListener<Track> mListener) {
-        this.mListener = mListener;
-    }
-
-    public FetchTrackListFromUrl(TrackDataSource.OnFetchDataListener<Track> listener,
-                                 boolean isSearching) {
+    protected BaseFetchTrackFromUrl(TrackDataSource.OnFetchDataListener<Track> listener) {
         mListener = listener;
-        mIsSearching = isSearching;
     }
 
     @Override
@@ -58,20 +51,12 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         }
     }
 
-    private List<Track> getTracksFromJsonObject(JSONObject jsonObject) throws JSONException {
+    protected List<Track> getTracksFromJsonObject(JSONObject jsonObject) throws JSONException {
         ArrayList<Track> trackList = new ArrayList<>();
 
         JSONArray jsonCollection = jsonObject.getJSONArray(Track.TrackEntity.COLLECTION);
         for (int i = 0; i < jsonCollection.length(); i++) {
-            JSONObject jsonTrack;
-
-            if (!mIsSearching) {
-                jsonTrack = jsonCollection.getJSONObject(i)
-                        .getJSONObject(Track.TrackEntity.TRACK);
-            } else {
-                jsonTrack = jsonCollection.getJSONObject(i);
-            }
-
+            JSONObject jsonTrack = getJsonTrack(jsonCollection.getJSONObject(i));
             Track track = parseJsonObjectToTrackObject(jsonTrack);
             if (track != null) {
                 trackList.add(track);
@@ -80,7 +65,9 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         return trackList;
     }
 
-    private String getJSONStringFromURL(String urlString) throws IOException {
+    protected abstract JSONObject getJsonTrack(JSONObject jsonObject) throws JSONException;
+
+    protected String getJSONStringFromURL(String urlString) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 
@@ -102,7 +89,7 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         return sb.toString();
     }
 
-    private String parseArtworkUrlToBetter(String artworkUrl) {
+    protected String parseArtworkUrlToBetter(String artworkUrl) {
         if (artworkUrl != null) {
             return artworkUrl.replace(Track.TrackEntity.LARGE_IMAGE_SIZE,
                     Track.TrackEntity.BETTER_IMAGE_SIZE);
@@ -110,7 +97,7 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
         return null;
     }
 
-    private Track parseJsonObjectToTrackObject(JSONObject jsonTrack) {
+    protected Track parseJsonObjectToTrackObject(JSONObject jsonTrack) {
         Track track = new Track();
 
         try {
