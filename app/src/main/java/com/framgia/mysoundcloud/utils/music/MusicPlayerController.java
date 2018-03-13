@@ -42,24 +42,6 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     }
 
     /**
-     * handle both case: 1 track or list track
-     *
-     * @param tracks
-     */
-    @Override
-    public void playTracks(Track... tracks) {
-        if (tracks == null || tracks.length == 0) {
-            notifyChangingState(PlaybackInfoListener.State.INVALID);
-            return;
-        }
-
-        this.mTracks = new ArrayList<>();
-        Collections.addAll(this.mTracks, tracks);
-        mCurrentTrackPosition = 0;
-        prepareLoadingTrack();
-    }
-
-    /**
      * stop playing music
      */
     @Override
@@ -191,7 +173,21 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     }
 
     @Override
-    public void playTrackAtPosition(int position) {
+    public void playTrackAtPosition(int position, Track... tracks) {
+        if (tracks == null && mTracks == null) {
+            notifyChangingState(PlaybackInfoListener.State.INVALID);
+            return;
+        }
+
+        // Neu track duoc chon dang duoc choi se khong chay lai
+        if ((tracks == null || tracks.length == 0) && mCurrentTrackPosition == position) return;
+
+        // Play a new list
+        if (tracks != null && tracks.length != 0) {
+            mTracks = new ArrayList<>();
+            Collections.addAll(mTracks, tracks);
+        }
+
         mCurrentTrackPosition = position;
         prepareLoadingTrack();
     }
@@ -200,6 +196,11 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     public void addToNextUp(Track track) {
         if (mTracks == null || mTracks.isEmpty()) return;
         mTracks.add(track);
+    }
+
+    @Override
+    public int getCurrentTrackPosition() {
+        return mCurrentTrackPosition;
     }
 
     @Override
@@ -236,7 +237,7 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
             @Override
             public void onCompletion(MediaPlayer mp) {
                 endProgressCallback();
-                notifyChangingState(PlaybackInfoListener.State.COMPLETED);
+                notifyChangingState(PlaybackInfoListener.State.PAUSE);
                 playNextTrack();
             }
         });
@@ -247,6 +248,9 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
             mMediaPlayer.setOnPreparedListener(this);
         } catch (IOException e) {
             notifyChangingState(PlaybackInfoListener.State.INVALID);
+
+            // Next track if current track is error
+            if (mCurrentTrackPosition < mTracks.size()) playNextTrack();
         }
     }
 

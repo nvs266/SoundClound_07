@@ -26,9 +26,16 @@ import java.util.List;
 public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> {
 
     private TrackDataSource.OnFetchDataListener<Track> mListener;
+    private boolean mIsSearching;
 
     public FetchTrackListFromUrl(TrackDataSource.OnFetchDataListener<Track> mListener) {
         this.mListener = mListener;
+    }
+
+    public FetchTrackListFromUrl(TrackDataSource.OnFetchDataListener<Track> listener,
+                                 boolean isSearching) {
+        mListener = listener;
+        mIsSearching = isSearching;
     }
 
     @Override
@@ -56,8 +63,15 @@ public class FetchTrackListFromUrl extends AsyncTask<String, Void, List<Track>> 
 
         JSONArray jsonCollection = jsonObject.getJSONArray(Track.TrackEntity.COLLECTION);
         for (int i = 0; i < jsonCollection.length(); i++) {
-            JSONObject jsonTrack = jsonCollection.getJSONObject(i)
-                    .getJSONObject(Track.TrackEntity.TRACK);
+            JSONObject jsonTrack;
+
+            if (!mIsSearching) {
+                jsonTrack = jsonCollection.getJSONObject(i)
+                        .getJSONObject(Track.TrackEntity.TRACK);
+            } else {
+                jsonTrack = jsonCollection.getJSONObject(i);
+            }
+
             Track track = parseJsonObjectToTrackObject(jsonTrack);
             if (track != null) {
                 trackList.add(track);

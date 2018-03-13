@@ -111,13 +111,6 @@ public class MusicService extends Service {
      * @param tracks
      */
 
-    public void playTracks(Track... tracks) {
-        if (mMusicPlayerManager == null) {
-            mMusicPlayerManager = new MusicPlayerController(this);
-        }
-        mMusicPlayerManager.playTracks(tracks);
-    }
-
     public void setPlaybackListener(PlaybackInfoListener playbackListener) {
         if (mMusicPlayerManager == null) return;
         mMusicPlayerManager.setPlaybackInfoListener(playbackListener);
@@ -126,7 +119,6 @@ public class MusicService extends Service {
     public Track getCurrentTrack() {
         return mMusicPlayerManager != null ? mMusicPlayerManager.getCurrentTrack() : null;
     }
-
 
     public void actionSeekTo(int userSelectedPosition) {
         if (mMusicPlayerManager == null) return;
@@ -255,14 +247,20 @@ public class MusicService extends Service {
         return mMusicPlayerManager.getListTrack();
     }
 
-    public void playTrackAtPosition(int position) {
-        if (mMusicPlayerManager == null) return;
-        mMusicPlayerManager.playTrackAtPosition(position);
+    public void playTrackAtPosition(int position, Track... tracks) {
+        if (mMusicPlayerManager == null) {
+            mMusicPlayerManager = new MusicPlayerController(this);
+        }
+        mMusicPlayerManager.playTrackAtPosition(position, tracks);
     }
 
     public void addToNextUp(Track track) {
         if (mMusicPlayerManager == null) return;
         mMusicPlayerManager.addToNextUp(track);
+    }
+
+    public int getCurrentTrackPosition() {
+        return mMusicPlayerManager != null ? mMusicPlayerManager.getCurrentTrackPosition() : null;
     }
 
     public class LocalBinder extends Binder {

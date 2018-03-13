@@ -28,6 +28,7 @@
     <string name="msg_0_track">0 track</string>
     <string name="msg_top">Top</string>
     <string name="msg_no_song_found">No song found!</string>
+    <string name="action_delete">Delete</string>
 
     <string-array name="music_genres">
         <item>All music</item>

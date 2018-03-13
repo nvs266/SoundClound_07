@@ -1,5 +1,6 @@
 package com.framgia.mysoundcloud.screen.download;
 
+import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BasePresenter;
 import com.framgia.mysoundcloud.screen.BaseView;
 
@@ -19,5 +20,9 @@ public interface DownloadViewContract {
      */
     interface Presenter extends BasePresenter<DownloadViewContract.View> {
         void loadTrack();
+    }
+
+    interface DeleteTrackListener {
+        void onDeleteClicked(Track track);
     }
 }

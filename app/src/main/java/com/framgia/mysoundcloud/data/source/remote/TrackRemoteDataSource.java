@@ -8,7 +8,7 @@ import com.framgia.mysoundcloud.utils.StringUtil;
  * Created by sonng266 on 28/02/2018.
  */
 
-public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource{
+public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
 
     private static TrackRemoteDataSource sTrackRemoteDataSource;
 
@@ -27,7 +27,9 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource{
     }
 
     @Override
-    public void searchTracksRemote(String trackName, OnFetchDataListener<Track> listener) {
-
+    public void searchTracksRemote(String trackName, int offSet,
+                                   OnFetchDataListener<Track> listener) {
+        new FetchTrackListFromUrl(listener, true)
+                .execute(StringUtil.convertUrlSearchTrack(trackName, offSet));
     }
 }
