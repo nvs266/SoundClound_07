@@ -22,14 +22,14 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
     @Override
     public void getTracksRemote(
             String genre, int limit, int offSet, OnFetchDataListener<Track> listener) {
-        new FetchTrackListFromUrl(listener)
+        new FetchGenresFromUrl(listener)
                 .execute(StringUtil.convertUrlFetchMusicGenre(genre, limit, offSet));
     }
 
     @Override
     public void searchTracksRemote(String trackName, int offSet,
                                    OnFetchDataListener<Track> listener) {
-        new FetchTrackListFromUrl(listener, true)
+        new SearchTrackFromUrl(listener)
                 .execute(StringUtil.convertUrlSearchTrack(trackName, offSet));
     }
 }
