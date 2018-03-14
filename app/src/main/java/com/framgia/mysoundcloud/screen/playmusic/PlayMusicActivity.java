@@ -53,6 +53,8 @@ public class PlayMusicActivity extends AppCompatActivity
     private ImageView mImageBackground;
     private ImageView mImageSong;
     private ProgressBar mProgressBar;
+    private ImageView mImageLoop;
+    private ImageView mImageShuffle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,12 +128,26 @@ public class PlayMusicActivity extends AppCompatActivity
                 mMusicService.changeMediaState();
                 break;
             case R.id.image_shuffle:
+                if (!mBound) break;
+                mMusicService.changeShuffleState();
+                changeIconShuffleState(mMusicService.isShuffle());
                 break;
             case R.id.image_change_loop_type:
+                if (!mBound) return;
+                mMusicService.changeLoopType();
+                changeIconLoopType(mMusicService.getLoopType());
                 break;
             default:
                 break;
         }
+    }
+
+    private void changeIconShuffleState(boolean isShuffle) {
+        if (isShuffle) {
+            mImageShuffle.setImageResource(R.drawable.ic_shuffle_deep_orange_500_48dp);
+            return;
+        }
+        mImageShuffle.setImageResource(R.drawable.ic_shuffle_white_48dp);
     }
 
     @Override
@@ -190,6 +206,10 @@ public class PlayMusicActivity extends AppCompatActivity
         mDialogManager = new DialogManager(this);
         mProgressBar = findViewById(R.id.progress_bar);
         mSeekBar = findViewById(R.id.seek_bar);
+        mImageLoop = findViewById(R.id.image_change_loop_type);
+        mImageLoop.setOnClickListener(this);
+        mImageShuffle = findViewById(R.id.image_shuffle);
+        mImageShuffle.setOnClickListener(this);
         mTextDuration = findViewById(R.id.text_duration);
         mTextEndTime = findViewById(R.id.text_end_time);
         mImagePlay = findViewById(R.id.image_play_pause);
@@ -266,6 +286,19 @@ public class PlayMusicActivity extends AppCompatActivity
         }
     }
 
+    private void changeIconLoopType(@PlaybackInfoListener.LoopType int loopType) {
+        switch (loopType) {
+            case PlaybackListener.LoopType.NO_LOOP:
+                mImageLoop.setImageResource(R.drawable.ic_repeat_white_48dp);
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_ONE:
+                mImageLoop.setImageResource(R.drawable.ic_repeat_one_deep_orange_500_48dp);
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_LIST:
+                mImageLoop.setImageResource(R.drawable.ic_repeat_deep_orange_500_48dp);
+        }
+    }
+
     private NextUpDialogFragment.NextUpItemClickedListener mNextUpListener =
             new NextUpDialogFragment.NextUpItemClickedListener() {
                 @Override
@@ -298,6 +331,8 @@ public class PlayMusicActivity extends AppCompatActivity
 
             updateUIWithTrack();
             updateUIWithMediaState(mMusicService.getMediaState());
+            changeIconLoopType(mMusicService.getLoopType());
+            changeIconShuffleState(mMusicService.isShuffle());
         }
 
         @Override

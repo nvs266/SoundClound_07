@@ -88,8 +88,6 @@ public class SearchFragment extends BaseFragment implements SearchViewContract.V
         if (mEndlessScrollListener.isLoading()) {
             mEndlessScrollListener.setLoading(false);
         }
-
-        mDialogManager.dialogMessage(getString(R.string.msg_no_internet_connection), "");
     }
 
     @Override

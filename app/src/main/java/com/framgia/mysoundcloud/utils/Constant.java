@@ -20,8 +20,8 @@ public final class Constant {
     public static final String CLIENT_ID = "client_id";
     public static final String REQUEST_METHOD_GET = "GET";
     public static final String LIMIT = "limit";
-    public static final int READ_TIME_OUT = 10000; /* milliseconds */
-    public static final int CONNECT_TIME_OUT = 15000; /* milliseconds */
+    public static final int READ_TIME_OUT = 5000; /* milliseconds */
+    public static final int CONNECT_TIME_OUT = 5000; /* milliseconds */
     public static final int OFFSET_DEFAULT = 0;
     public static final int LIMIT_DEFAULT = 10;
     public static final String NULL_RESULT = "null";

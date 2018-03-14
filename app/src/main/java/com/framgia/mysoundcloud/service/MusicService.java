@@ -265,6 +265,26 @@ public class MusicService extends Service {
         return mMusicPlayerManager != null ? mMusicPlayerManager.getCurrentTrackPosition() : null;
     }
 
+    public void changeLoopType() {
+        if (mMusicPlayerManager == null) return;
+        mMusicPlayerManager.changeLoopType();
+    }
+
+    @PlaybackInfoListener.LoopType
+    public int getLoopType() {
+        if (mMusicPlayerManager == null) return PlaybackInfoListener.LoopType.NO_LOOP;
+        return mMusicPlayerManager.getLoopType();
+    }
+
+    public void changeShuffleState() {
+        if (mMusicPlayerManager == null) return;
+        mMusicPlayerManager.changeShuffleState();
+    }
+
+    public boolean isShuffle() {
+        return mMusicPlayerManager != null && mMusicPlayerManager.isShuffle();
+    }
+
     public class LocalBinder extends Binder {
         public MusicService getService() {
             return MusicService.this;

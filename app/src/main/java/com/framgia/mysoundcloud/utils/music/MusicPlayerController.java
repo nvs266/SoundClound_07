@@ -36,6 +36,10 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     @PlaybackInfoListener.State
     private int mState;
     private MusicService mMusicService;
+    @PlaybackInfoListener.LoopType
+    private int mLoopType = PlaybackInfoListener.LoopType.NO_LOOP;
+    private boolean mIsShuffle;
+    private List<Track> mOriginalTracks;
 
     public MusicPlayerController(MusicService musicService) {
         mMusicService = musicService;
@@ -74,7 +78,11 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
 
     @Override
     public void playNextTrack() {
-        if (mCurrentTrackPosition == mTracks.size() - 1) return;
+        if (mCurrentTrackPosition == mTracks.size() - 1) {
+            if (mLoopType != PlaybackInfoListener.LoopType.LOOP_LIST) return;
+            mCurrentTrackPosition = -1;
+        }
+
         mCurrentTrackPosition++;
         prepareLoadingTrack();
     }
@@ -186,6 +194,8 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
         if (tracks != null && tracks.length != 0) {
             mTracks = new ArrayList<>();
             Collections.addAll(mTracks, tracks);
+
+            mIsShuffle = false;
         }
 
         mCurrentTrackPosition = position;
@@ -196,11 +206,65 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
     public void addToNextUp(Track track) {
         if (mTracks == null || mTracks.isEmpty()) return;
         mTracks.add(track);
+
+        if (!mIsShuffle) return;
+        mOriginalTracks.add(track);
     }
 
     @Override
     public int getCurrentTrackPosition() {
         return mCurrentTrackPosition;
+    }
+
+    @Override
+    public int getLoopType() {
+        return mLoopType;
+    }
+
+    @Override
+    public void changeLoopType() {
+        switch (mLoopType) {
+            case PlaybackInfoListener.LoopType.NO_LOOP:
+                mLoopType = PlaybackInfoListener.LoopType.LOOP_LIST;
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_LIST:
+                mLoopType = PlaybackInfoListener.LoopType.LOOP_ONE;
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_ONE:
+                mLoopType = PlaybackInfoListener.LoopType.NO_LOOP;
+                break;
+        }
+    }
+
+    @Override
+    public boolean isShuffle() {
+        return mIsShuffle;
+    }
+
+    @Override
+    public void changeShuffleState() {
+        if (!mIsShuffle) {
+            mOriginalTracks = new ArrayList<>();
+            mOriginalTracks.addAll(mTracks);
+
+            Track currentTrack = mTracks.get(mCurrentTrackPosition);
+
+            Collections.shuffle(mTracks);
+            mCurrentTrackPosition = mTracks.indexOf(currentTrack);
+
+            mIsShuffle = true;
+            return;
+        }
+
+        // mIsShuffle = true
+        Track currentTrack = mTracks.get(mCurrentTrackPosition);
+
+        mTracks = new ArrayList<>();
+        mTracks.addAll(mOriginalTracks);
+
+        mCurrentTrackPosition = mTracks.indexOf(currentTrack);
+
+        mIsShuffle = false;
     }
 
     @Override
@@ -238,7 +302,7 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
             public void onCompletion(MediaPlayer mp) {
                 endProgressCallback();
                 notifyChangingState(PlaybackInfoListener.State.PAUSE);
-                playNextTrack();
+                handleCompletionWithLoopType();
             }
         });
 
@@ -252,6 +316,22 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
             // Next track if current track is error
             if (mCurrentTrackPosition < mTracks.size()) playNextTrack();
         }
+    }
+
+    private void handleCompletionWithLoopType() {
+        switch (mLoopType) {
+            case PlaybackInfoListener.LoopType.NO_LOOP:
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_ONE:
+                mCurrentTrackPosition--;
+                break;
+            case PlaybackInfoListener.LoopType.LOOP_LIST:
+                if (mCurrentTrackPosition != mTracks.size() - 1) break;
+                mCurrentTrackPosition = -1;
+                break;
+        }
+
+        playNextTrack();
     }
 
     private void updateProgressCallbackTask() {

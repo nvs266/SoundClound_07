@@ -122,7 +122,6 @@ public class MusicGenresFragment extends BaseFragment implements
         if (mEndlessScrollListener.isLoading()) {
             mEndlessScrollListener.setLoading(false);
         }
-        showDialogError();
     }
 
     @Override
