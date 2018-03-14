@@ -38,4 +38,13 @@ public interface MusicPlayerManager {
     void addToNextUp(Track track);
 
     int getCurrentTrackPosition();
+
+    @PlaybackInfoListener.LoopType
+    int getLoopType();
+
+    void changeLoopType();
+
+    boolean isShuffle();
+
+    void changeShuffleState();
 }
