@@ -30,6 +30,7 @@ public class MusicService extends Service {
     public static final String ACTION_CHANGE_MEDIA_STATE = "ACTION_PLAY_PAUSE";
     public static final String ACTION_NEXT_TRACK = "ACTION_NEXT_TRACK";
     public static final String ACTION_PREVIOUS_TRACK = "ACTION_PREVIOUS_TRACK";
+    public static final String ACTION_OPEN_PLAY_MUSIC_ACTIVITY = "ACTION_OPEN_PLAY_MUSIC_ACTIVITY";
 
     // Notification
     private static final int NOTIFY_ID = 1;
@@ -108,7 +109,7 @@ public class MusicService extends Service {
     /**
      * Goi den cac phuong thuc cho {@link MusicPlayerManager} xu ly
      *
-     * @param tracks
+     * @param playbackListener
      */
 
     public void setPlaybackListener(PlaybackInfoListener playbackListener) {
@@ -203,6 +204,7 @@ public class MusicService extends Service {
 
     private void initializeBaseNotification() {
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        notificationIntent.setAction(ACTION_OPEN_PLAY_MUSIC_ACTIVITY);
         pendingIntentOpenApp = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 
         Intent actionNextIntent = new Intent(getApplicationContext(), MusicService.class);

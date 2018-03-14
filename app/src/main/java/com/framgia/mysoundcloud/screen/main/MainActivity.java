@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkOpenPlayMusicActivity();
         initializeToolbar();
         findView();
         setupUI();
@@ -290,6 +291,16 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
 
     private void closeSearchFragment() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    private void checkOpenPlayMusicActivity() {
+        Intent intent = getIntent();
+        if (intent == null) return;
+        String action = intent.getAction();
+        if (action == null) return;
+        if (action.equals(MusicService.ACTION_OPEN_PLAY_MUSIC_ACTIVITY)) {
+            startActivity(new Intent(getApplicationContext(), PlayMusicActivity.class));
+        }
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
