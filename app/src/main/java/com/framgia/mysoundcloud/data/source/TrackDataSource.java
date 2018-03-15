@@ -1,5 +1,6 @@
 package com.framgia.mysoundcloud.data.source;
 
+import com.framgia.mysoundcloud.data.model.Playlist;
 import com.framgia.mysoundcloud.data.model.Track;
 
 import java.util.List;
@@ -20,7 +21,13 @@ public interface TrackDataSource {
 
         boolean deleteTrack(Track track);
 
-        boolean insertTrack(Track newTrack);
+        void addTracksToLocalPlaylist(String playlistName,
+                                      OnHandleDatabaseListener listener, Track... tracks);
+
+        void addTracksToNewLocalPlaylist(String newPlaylistName,
+                                         OnHandleDatabaseListener listener, Track... tracks);
+
+        void getLocalPlaylist(OnFetchDataListener<Playlist> listener);
     }
 
     /**
@@ -37,5 +44,11 @@ public interface TrackDataSource {
         void onFetchDataSuccess(List<T> data);
 
         void onFetchDataFailure(String message);
+    }
+
+    interface OnHandleDatabaseListener {
+        void onHandleSuccess(String message);
+
+        void onHandleFailure(String message);
     }
 }

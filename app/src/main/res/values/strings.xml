@@ -29,6 +29,16 @@
     <string name="msg_top">Top</string>
     <string name="msg_no_song_found">No song found!</string>
     <string name="action_delete">Delete</string>
+    <string name="action_add_to_playlist">Add to playlist</string>
+    <string name="msg_add_new_playlist">Add new playlist</string>
+    <string name="msg_list_already_exists">The list already exists</string>
+    <string name="msg_added_to_playlist">Added to playlist</string>
+    <string name="msg_no_playlist_found">No playlist found</string>
+    <string name="msg_null_playlist">Null playlist</string>
+    <string name="title_playlist">Playlist</string>
+    <string name="msg_my_playlist">My playlist</string>
+    <string name="msg_0_tracks">0 tracks</string>
+    <string name="msg_no_track_to_add">No track to add</string>
 
     <string-array name="music_genres">
         <item>All music</item>
@@ -46,4 +56,5 @@
         <item>Top 40</item>
         <item>Top 50</item>
     </string-array>
+
 </resources>
