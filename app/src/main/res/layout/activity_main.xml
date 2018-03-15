@@ -44,6 +44,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:icon="@drawable/ic_file_download_grey" />
+
+                <android.support.design.widget.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/ic_playlist_play_grey_500_36dp" />
             </android.support.design.widget.TabLayout>
         </android.support.design.widget.AppBarLayout>
 

@@ -12,7 +12,7 @@ import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.screen.BaseFragment;
 import com.framgia.mysoundcloud.screen.main.MainViewConstract;
-import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresAdapterTrack;
+import com.framgia.mysoundcloud.screen.musicgenres.MusicGenresAdapter;
 import com.framgia.mysoundcloud.utils.Constant;
 import com.framgia.mysoundcloud.utils.EndlessScrollListener;
 import com.framgia.mysoundcloud.widget.DialogManager;
@@ -26,7 +26,7 @@ public class SearchFragment extends BaseFragment implements SearchViewContract.V
         EndlessScrollListener.LoadMoreListener {
 
     private SearchViewPresenter mPresenter;
-    private MusicGenresAdapterTrack mAdapter;
+    private MusicGenresAdapter mAdapter;
     private String mQuery;
     private DialogManager mDialogManager;
     private ProgressDialog mProgressDialog;
@@ -115,7 +115,7 @@ public class SearchFragment extends BaseFragment implements SearchViewContract.V
 
     private void initializeRecyclerView(View view) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mAdapter = new MusicGenresAdapterTrack(getContext(), mTrackListListener);
+        mAdapter = new MusicGenresAdapter(getContext(), mTrackListListener);
         mEndlessScrollListener = new EndlessScrollListener(this);
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);

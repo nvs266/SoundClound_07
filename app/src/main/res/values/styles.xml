@@ -32,5 +32,6 @@
         <item name="colorPrimary">@android:color/white</item>
         <item name="android:windowBackground">@color/gainsboro</item>
         <item name="android:textColorPrimary">@color/colorSecondaryText</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>
