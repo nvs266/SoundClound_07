@@ -36,5 +36,7 @@ public interface MainViewConstract {
         void onPlayedTrack(int position, List<Track> tracks);
 
         void onAddedToNextUp(Track track);
+
+        void onAddToPlaylist(Track track);
     }
 }

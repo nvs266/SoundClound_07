@@ -1,9 +1,12 @@
 package com.framgia.mysoundcloud.data.repository;
 
+import com.framgia.mysoundcloud.data.model.Playlist;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
 import com.framgia.mysoundcloud.data.source.local.TrackLocalDataSource;
 import com.framgia.mysoundcloud.data.source.remote.TrackRemoteDataSource;
+
+import java.util.List;
 
 /**
  * Created by sonng266 on 28/02/2018.
@@ -53,9 +56,30 @@ public class TrackRepository implements TrackDataSource.RemoteDataSource,
     }
 
     @Override
-    public boolean insertTrack(Track newTrack) {
-        if (mTrackLocalDataSource != null) mTrackLocalDataSource.insertTrack(newTrack);
-        return false;
+    public void addTracksToPlaylist(int playlistId,
+                                    OnHandleDatabaseListener listener, Track... tracks) {
+        if (mTrackLocalDataSource == null) return;
+        mTrackLocalDataSource.addTracksToPlaylist(playlistId, listener, tracks);
+    }
+
+    @Override
+    public void addTracksToNewPlaylist(String newPlaylistName,
+                                       OnHandleDatabaseListener listener, Track... tracks) {
+        if (mTrackLocalDataSource == null) return;
+        mTrackLocalDataSource.addTracksToNewPlaylist(newPlaylistName, listener, tracks);
+    }
+
+
+    @Override
+    public List<Playlist> getPlaylist() {
+        if (mTrackLocalDataSource == null) return null;
+        return mTrackLocalDataSource.getPlaylist();
+    }
+
+    @Override
+    public List<Playlist> getDetailPlaylist() {
+        if (mTrackLocalDataSource == null) return null;
+        return mTrackLocalDataSource.getDetailPlaylist();
     }
 
     @Override

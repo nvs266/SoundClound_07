@@ -32,6 +32,7 @@ import com.framgia.mysoundcloud.screen.search.SearchFragment;
 import com.framgia.mysoundcloud.service.MusicService;
 import com.framgia.mysoundcloud.utils.Navigator;
 import com.framgia.mysoundcloud.utils.music.PlaybackInfoListener;
+import com.framgia.mysoundcloud.widget.DialogManager;
 
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
     private ConstraintLayout mLayoutMiniControl;
     private Track mTrack;
     private SearchFragment mSearchFragment;
+    private DialogManager mDialogManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,11 +148,21 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
         int tabIconColor = ContextCompat.getColor(this, R.color.colorAccent);
         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
 
-        if (tab.getPosition() == 0) {
-            updateTitle(getString(R.string.music_genres));
-        } else updateTitle(getString(R.string.action_download));
+        switch (tab.getPosition()) {
+            case 0:
+                updateTitle(getString(R.string.music_genres));
+                mViewPager.setCurrentItem(0);
+                break;
+            case 1:
+                updateTitle(getString(R.string.action_download));
+                mViewPager.setCurrentItem(1);
+                break;
+            case 2:
+                updateTitle(getString(R.string.title_playlist));
+                mViewPager.setCurrentItem(2);
+                break;
+        }
 
-        mViewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
@@ -217,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
                 new MusicGenresPagerAdapter(getSupportFragmentManager(), mTrackListListener));
         mViewPager.addOnPageChangeListener(
                 new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mViewPager.setOffscreenPageLimit(MusicGenresPagerAdapter.TAB_NUMBER);
         mTabLayout.addOnTabSelectedListener(this);
 
         mProgressBar.getIndeterminateDrawable()
@@ -224,6 +237,8 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
                         this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         mImageChangeState.setOnClickListener(this);
+
+        mDialogManager = new DialogManager(this);
     }
 
     private void initializeSearchView(Menu menu) {
@@ -351,6 +366,12 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
                 public void onAddedToNextUp(Track track) {
                     if (mTrack == null) playTracks(0, track);
                     else if (mBound) mMusicService.addToNextUp(track);
+                }
+
+                @Override
+                public void onAddToPlaylist(Track track) {
+                    if (mDialogManager == null) return;
+                    mDialogManager.dialogAddToPlaylist(MainActivity.this, track);
                 }
 
                 @Override
