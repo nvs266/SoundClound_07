@@ -33,7 +33,7 @@ public class DownloadedTracksFragment extends BaseFragment
 
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 2;
     private DownloadViewContract.Presenter mPresenter;
-    private DownloadedTracksAdapterTrack mDownloadedTracksAdapter;
+    private DownloadedTracksAdapter mDownloadedTracksAdapter;
     private TextView mTextNumberTracks;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -161,7 +161,7 @@ public class DownloadedTracksFragment extends BaseFragment
 
     private void setupRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-        mDownloadedTracksAdapter = new DownloadedTracksAdapterTrack(getContext(),
+        mDownloadedTracksAdapter = new DownloadedTracksAdapter(getContext(),
                 mTrackListListener, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(

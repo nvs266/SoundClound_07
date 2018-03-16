@@ -31,7 +31,7 @@ public class MusicGenresFragment extends BaseFragment implements
         EndlessScrollListener.LoadMoreListener {
 
     private MusicGenresPresenter mPresenter;
-    private MusicGenresAdapterTrack mMusicGenresAdapter;
+    private MusicGenresAdapter mMusicGenresAdapter;
     private DialogManager mDialogManager;
     private ProgressDialog mProgressDialog;
     private Spinner mSpinnerGenres;
@@ -173,7 +173,7 @@ public class MusicGenresFragment extends BaseFragment implements
 
     private void initializeRecyclerView(View view) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mMusicGenresAdapter = new MusicGenresAdapterTrack(getContext(), mTrackListListener);
+        mMusicGenresAdapter = new MusicGenresAdapter(getContext(), mTrackListListener);
         mEndlessScrollListener = new EndlessScrollListener(this);
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);

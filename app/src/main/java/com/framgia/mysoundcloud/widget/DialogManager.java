@@ -4,17 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.framgia.mysoundcloud.R;
-import com.framgia.mysoundcloud.data.model.Playlist;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.repository.TrackRepository;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
-
-import java.util.List;
+import com.framgia.mysoundcloud.screen.playlist.PlaylistDialogAdapter;
 
 /**
  * Created by sonng266 on 25/02/2018.
@@ -62,13 +65,45 @@ public class DialogManager implements DialogManagerInterface {
         }
     }
 
-    public void dialogAddToPlaylist(final Track track, Activity activity) {
+    @Override
+    public void dialogAddToPlaylist(final Activity activity, final Track... tracks) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_select_playlist, null);
         dialogBuilder.setView(dialogView);
         dialogBuilder.setTitle(mContext.getString(R.string.action_add_to_playlist));
-        AlertDialog alertDialog = dialogBuilder.create();
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        final TrackDataSource.OnHandleDatabaseListener listener =
+                new TrackDataSource.OnHandleDatabaseListener() {
+                    @Override
+                    public void onHandleSuccess(String message) {
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onHandleFailure(String message) {
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                };
+
+        final EditText editTextNewPlaylist = dialogView.findViewById(R.id.edit_text_new_playlist);
+        ImageView imageAddNewPlaylist = dialogView.findViewById(R.id.image_add_new_playlist);
+        imageAddNewPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TrackRepository.getInstance().addTracksToNewPlaylist(
+                        editTextNewPlaylist.getText().toString(), listener, tracks);
+            }
+        });
+
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recycler_playlist);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        recyclerView.addItemDecoration(
+                new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(new PlaylistDialogAdapter(listener, tracks));
+
         alertDialog.show();
     }
 
