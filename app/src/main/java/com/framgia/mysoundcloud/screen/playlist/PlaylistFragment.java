@@ -1,9 +1,12 @@
 package com.framgia.mysoundcloud.screen.playlist;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,12 +18,13 @@ import com.framgia.mysoundcloud.R;
 import com.framgia.mysoundcloud.data.model.Playlist;
 import com.framgia.mysoundcloud.screen.main.MainViewConstract;
 import com.framgia.mysoundcloud.utils.Constant;
+
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlaylistFragment extends Fragment implements PlaylistContract.View, SwipeRefreshLayout.OnRefreshListener {
+public class PlaylistFragment extends Fragment implements PlaylistContract.View {
 
     private static PlaylistFragment sPlaylistFragment;
 
@@ -28,7 +32,7 @@ public class PlaylistFragment extends Fragment implements PlaylistContract.View,
     private PlaylistContract.Presenter mPresenter;
     private MainViewConstract.TrackListListener mListener;
     private PlaylistAdapter mPlaylistAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private BroadcastReceiver mReceiver;
 
     public static PlaylistFragment newInstance(MainViewConstract.TrackListListener listener) {
         if (sPlaylistFragment == null) {
@@ -58,6 +62,8 @@ public class PlaylistFragment extends Fragment implements PlaylistContract.View,
         setupUI(view);
         mPresenter.loadPlaylist();
 
+        registerBroadcast();
+
         return view;
     }
 
@@ -65,7 +71,12 @@ public class PlaylistFragment extends Fragment implements PlaylistContract.View,
     public void showPlaylist(List<Playlist> playlists) {
         mPlaylists = playlists;
         mPlaylistAdapter.replaceData(playlists);
-        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getActivity().unregisterReceiver(mReceiver);
     }
 
     private void setupUI(View view) {
@@ -76,13 +87,18 @@ public class PlaylistFragment extends Fragment implements PlaylistContract.View,
         recyclerView.addItemDecoration(
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPlaylistAdapter);
-
-        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    @Override
-    public void onRefresh() {
-        mPresenter.loadPlaylist();
+    private void registerBroadcast() {
+        mReceiver = new NewTrackAddedBroadcastReceiver();
+        getActivity().registerReceiver(mReceiver, new IntentFilter(Constant.ACTION_ADD_TRACK_TO_PLAYLIST));
+    }
+
+    public class NewTrackAddedBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mPresenter == null) return;
+            mPresenter.loadPlaylist();
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.framgia.mysoundcloud.widget;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.repository.TrackRepository;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
 import com.framgia.mysoundcloud.screen.playlist.PlaylistDialogAdapter;
+import com.framgia.mysoundcloud.utils.Constant;
 
 /**
  * Created by sonng266 on 25/02/2018.
@@ -80,6 +82,8 @@ public class DialogManager implements DialogManagerInterface {
                     public void onHandleSuccess(String message) {
                         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
                         alertDialog.dismiss();
+                        Intent i = new Intent(Constant.ACTION_ADD_TRACK_TO_PLAYLIST);
+                        activity.sendBroadcast(i);
                     }
 
                     @Override

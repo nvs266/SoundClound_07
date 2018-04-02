@@ -2,7 +2,11 @@ package com.framgia.mysoundcloud.screen.download;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -32,10 +36,14 @@ public class DownloadedTracksFragment extends BaseFragment
         SwipeRefreshLayout.OnRefreshListener, DownloadViewContract.DeleteTrackListener {
 
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 2;
+    private static final int WHAT_TRACK_DELETED = 3;
+    private static final int TIME_DELAY_SEND_MSG = 1000;
+
     private DownloadViewContract.Presenter mPresenter;
     private DownloadedTracksAdapter mDownloadedTracksAdapter;
     private TextView mTextNumberTracks;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private FileObserver mFileObserver;
+    private Handler mHandler;
 
     public static DownloadedTracksFragment newInstance(
             MainViewConstract.TrackListListener listListener) {
@@ -63,10 +71,9 @@ public class DownloadedTracksFragment extends BaseFragment
 
         setupRecyclerView(view);
 
-        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-
         initializePermissionStorage();
+        initializeHandler();
+        initializeFileObserver();
     }
 
     @Override
@@ -79,20 +86,17 @@ public class DownloadedTracksFragment extends BaseFragment
         mTextNumberTracks.setText(String.format("%d tracks", trackList.size()));
         mDownloadedTracksAdapter.replaceData(trackList);
         mTracks = trackList;
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void showNoTrack() {
         mTextNumberTracks.setText(R.string.msg_0_track);
-        mSwipeRefreshLayout.setRefreshing(false);
         mDownloadedTracksAdapter.replaceData(new ArrayList<Track>());
     }
 
     @Override
     public void showLoadingTracksError(String message) {
         mTextNumberTracks.setText(R.string.msg_0_track);
-        mSwipeRefreshLayout.setRefreshing(false);
         mDownloadedTracksAdapter.replaceData(new ArrayList<Track>());
     }
 
@@ -117,7 +121,6 @@ public class DownloadedTracksFragment extends BaseFragment
                     mPresenter.loadTrack();
                 } else {
                     Toast.makeText(getActivity(), R.string.msg_permission_denied, Toast.LENGTH_SHORT).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             default:
                 break;
@@ -143,6 +146,37 @@ public class DownloadedTracksFragment extends BaseFragment
     public void onDeleteClicked(Track track) {
         if (!TrackRepository.getInstance().deleteTrack(track)) return;
         mPresenter.loadTrack();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mFileObserver.stopWatching();
+    }
+
+    private void initializeHandler() {
+        mHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == WHAT_TRACK_DELETED) {
+                    mPresenter.loadTrack();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void initializeFileObserver() {
+        mFileObserver = new FileObserver(Constant.DOWNLOAD_FILE_PATH) {
+            @Override
+            public void onEvent(int event, @Nullable String path) {
+                if (event == FileObserver.CLOSE_NOWRITE) {
+                    mHandler.sendEmptyMessageDelayed(WHAT_TRACK_DELETED, TIME_DELAY_SEND_MSG);
+                }
+            }
+        };
+        mFileObserver.startWatching();
     }
 
     private void initializePermissionStorage() {

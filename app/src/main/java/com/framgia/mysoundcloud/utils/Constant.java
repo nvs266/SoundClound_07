@@ -1,6 +1,7 @@
 package com.framgia.mysoundcloud.utils;
 
 import android.Manifest;
+import android.os.Environment;
 
 /**
  * Created by sonng266 on 28/02/2018.
@@ -30,6 +31,8 @@ public final class Constant {
 
     // String
     public static final String BREAK_LINE = "\n";
+    public static final String DOWNLOAD_FILE_PATH =
+            Environment.getExternalStorageDirectory().toString() + "/MySoundCloud";
     public static final String[] PERMISSIONS =
             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -45,4 +48,8 @@ public final class Constant {
     // SQL
     public static final String DATABASE_NAME = "MySoundCloud.db";
     public static final int DATABASE_VERSION = 1;
+
+    // Action
+    public static final String ACTION_ADD_TRACK_TO_PLAYLIST = "ACTION_ADD_TRACK_TO_PLAYLIST";
+
 }

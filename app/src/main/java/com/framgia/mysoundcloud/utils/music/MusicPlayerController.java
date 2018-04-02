@@ -4,7 +4,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.service.MusicService;
@@ -151,8 +150,6 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
 
     @Override
     public void setPlaybackInfoListener(PlaybackInfoListener listener) {
-        Log.d("AMEN", "setPlaybackInfoListener: " + listener);
-
         mListener = listener;
 
         if (listener != null && listener.isUpdatingProgressSeekBar()) {

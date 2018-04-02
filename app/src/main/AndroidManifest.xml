@@ -33,7 +33,7 @@
             android:name=".screen.playmusic.PlayMusicActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:theme="@style/PlayMusicScreenTheme" />
 
         <service
             android:name=".service.MusicService"

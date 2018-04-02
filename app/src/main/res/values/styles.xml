@@ -34,4 +34,9 @@
         <item name="android:textColorPrimary">@color/colorSecondaryText</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <!--Play music view theme.-->
+    <style name="PlayMusicScreenTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

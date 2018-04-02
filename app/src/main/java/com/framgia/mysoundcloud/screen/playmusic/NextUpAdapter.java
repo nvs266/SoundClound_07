@@ -14,15 +14,15 @@ import com.framgia.mysoundcloud.utils.StringUtil;
  * Created by sonng266 on 08/03/2018.
  */
 
-public class NextUpAdapterTrack extends
+public class NextUpAdapter extends
         BaseTrackRecyclerViewAdapter<BaseTrackRecyclerViewAdapter.BaseViewHolder> {
 
     private NextUpDialogFragment.NextUpItemClickedListener mListener;
     private int mCurrentPosition;
 
-    NextUpAdapterTrack(Context context,
-                       NextUpDialogFragment.NextUpItemClickedListener listener,
-                       int currentTrackPosition) {
+    NextUpAdapter(Context context,
+                  NextUpDialogFragment.NextUpItemClickedListener listener,
+                  int currentTrackPosition) {
         super(context);
         mListener = listener;
         mCurrentPosition = currentTrackPosition;
