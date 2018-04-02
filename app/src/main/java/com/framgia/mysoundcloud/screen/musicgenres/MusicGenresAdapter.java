@@ -23,12 +23,12 @@ import java.util.List;
  * Created by sonng266 on 02/03/2018.
  */
 
-public class MusicGenresAdapterTrack extends BaseTrackRecyclerViewAdapter<BaseTrackRecyclerViewAdapter.BaseViewHolder>
+public class MusicGenresAdapter extends BaseTrackRecyclerViewAdapter<BaseTrackRecyclerViewAdapter.BaseViewHolder>
         implements DownloadTrackManager.DownloadListener {
 
     private MainViewConstract.TrackListListener mListener;
 
-    public MusicGenresAdapterTrack(Context context, MainViewConstract.TrackListListener listener) {
+    public MusicGenresAdapter(Context context, MainViewConstract.TrackListListener listener) {
         super(context);
         mListener = listener;
     }
@@ -118,8 +118,12 @@ public class MusicGenresAdapterTrack extends BaseTrackRecyclerViewAdapter<BaseTr
                                     return true;
                                 case R.id.action_download:
                                     new DownloadTrackManager(mContext,
-                                            MusicGenresAdapterTrack.this)
+                                            MusicGenresAdapter.this)
                                             .downloadTrack(mTrack);
+                                    return true;
+                                case R.id.action_add_to_playlist:
+                                    if (mListener == null) return true;
+                                    mListener.onAddToPlaylist(mTrack);
                                     return true;
                                 default:
                                     return false;

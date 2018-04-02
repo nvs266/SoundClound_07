@@ -323,8 +323,8 @@ public class MusicPlayerController implements MusicPlayerManager, MediaPlayer.On
             case PlaybackInfoListener.LoopType.NO_LOOP:
                 break;
             case PlaybackInfoListener.LoopType.LOOP_ONE:
-                mCurrentTrackPosition--;
-                break;
+                onPrepared(mMediaPlayer);
+                return;
             case PlaybackInfoListener.LoopType.LOOP_LIST:
                 if (mCurrentTrackPosition != mTracks.size() - 1) break;
                 mCurrentTrackPosition = -1;

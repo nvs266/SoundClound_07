@@ -18,14 +18,14 @@ import com.framgia.mysoundcloud.utils.StringUtil;
  * Created by sonng266 on 11/03/2018.
  */
 
-public class DownloadedTracksAdapterTrack
+public class DownloadedTracksAdapter
         extends BaseTrackRecyclerViewAdapter<BaseTrackRecyclerViewAdapter.BaseViewHolder> {
 
     private MainViewConstract.TrackListListener mListener;
     private DownloadViewContract.DeleteTrackListener mDeleteTrackListener;
 
-    DownloadedTracksAdapterTrack(Context context, MainViewConstract.TrackListListener listener,
-                                 DownloadViewContract.DeleteTrackListener deleteTrackListener) {
+    DownloadedTracksAdapter(Context context, MainViewConstract.TrackListListener listener,
+                            DownloadViewContract.DeleteTrackListener deleteTrackListener) {
         super(context);
         mListener = listener;
         mDeleteTrackListener = deleteTrackListener;

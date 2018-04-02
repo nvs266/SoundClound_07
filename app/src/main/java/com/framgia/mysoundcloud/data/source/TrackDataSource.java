@@ -21,13 +21,15 @@ public interface TrackDataSource {
 
         boolean deleteTrack(Track track);
 
-        void addTracksToLocalPlaylist(String playlistName,
-                                      OnHandleDatabaseListener listener, Track... tracks);
+        void addTracksToPlaylist(int playlistId,
+                                 OnHandleDatabaseListener listener, Track... tracks);
 
-        void addTracksToNewLocalPlaylist(String newPlaylistName,
-                                         OnHandleDatabaseListener listener, Track... tracks);
+        void addTracksToNewPlaylist(String newPlaylistName,
+                                    OnHandleDatabaseListener listener, Track... tracks);
 
-        void getLocalPlaylist(OnFetchDataListener<Playlist> listener);
+        List<Playlist> getPlaylist();
+
+        List<Playlist> getDetailPlaylist();
     }
 
     /**
