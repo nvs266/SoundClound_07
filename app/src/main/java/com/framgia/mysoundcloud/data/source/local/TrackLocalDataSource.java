@@ -11,9 +11,11 @@ import com.framgia.mysoundcloud.data.model.Playlist;
 import com.framgia.mysoundcloud.data.model.Track;
 import com.framgia.mysoundcloud.data.source.TrackDataSource;
 import com.framgia.mysoundcloud.data.source.local.config.PlaylistTrackDbHelper;
+import com.framgia.mysoundcloud.utils.Constant;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -152,5 +154,12 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
             playlist.setTracks(tracks);
         }
         return playlists;
+    }
+
+    @Override
+    public List<String> getListGenre() {
+        List<String> genres = new ArrayList<>();
+        Collections.addAll(genres, Constant.MUSIC_GENRES);
+        return genres;
     }
 }

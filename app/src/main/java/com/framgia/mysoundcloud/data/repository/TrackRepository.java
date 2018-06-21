@@ -83,6 +83,12 @@ public class TrackRepository implements TrackDataSource.RemoteDataSource,
     }
 
     @Override
+    public List<String> getListGenre() {
+        if (mTrackLocalDataSource == null) return null;
+        return mTrackLocalDataSource.getListGenre();
+    }
+
+    @Override
     public void getTracksRemote(String genre, int limit, int offSet,
                                 OnFetchDataListener<Track> listener) {
         if (mTrackRemoteDataSource == null) return;

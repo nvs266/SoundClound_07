@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/dp_8"
+    android:paddingBottom="@dimen/dp_8"
+    android:paddingTop="@dimen/dp_8">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/image_track"
+        android:layout_width="@dimen/dp_140"
+        android:layout_height="@dimen/dp_160"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_track_name"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_4"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/msg_title"
+        android:textColor="@color/colorPrimaryText"
+        app:layout_constraintEnd_toStartOf="@id/text_options"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_track" />
+
+    <TextView
+        android:id="@+id/text_artist_name"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_4"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/msg_artist"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/text_options"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_track_name" />
+
+    <TextView
+        android:id="@+id/text_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_8"
+        android:text="@string/text_icon"
+        android:textAppearance="?android:textAppearanceLarge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_track_name" />
+</android.support.constraint.ConstraintLayout>

@@ -30,6 +30,8 @@ public interface TrackDataSource {
         List<Playlist> getPlaylist();
 
         List<Playlist> getDetailPlaylist();
+
+        List<String> getListGenre();
     }
 
     /**
