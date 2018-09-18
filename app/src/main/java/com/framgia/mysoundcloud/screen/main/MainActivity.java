@@ -154,11 +154,11 @@ public class MainActivity extends AppCompatActivity implements MainViewConstract
                 mViewPager.setCurrentItem(0);
                 break;
             case 1:
-                updateTitle(getString(R.string.action_download));
+                updateTitle(getString(R.string.title_playlist));
                 mViewPager.setCurrentItem(1);
                 break;
             case 2:
-                updateTitle(getString(R.string.title_playlist));
+                updateTitle(getString(R.string.action_download));
                 mViewPager.setCurrentItem(2);
                 break;
         }
